@@ -139,17 +139,15 @@ if [ $preprocess == true ];then
 			  -f 6 qseqid qlen sseqid stitle pident length evalue sstart send   
 	   cd $rawData_loc
        cp -rf  ${present_loc}/sqlite_table $rawData_loc
-       cp -rf  ${present_loc}/simbiont-js $rawData_loc
        cp $rawData_loc/"$file"_assemble_nr $rawData_loc/"$file"_megahit_assemble_nr
        sed -i "s/#/_/" $rawData_loc/"$file"_megahit_assemble_nr
        cat $rawData_loc/"$file"_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > $rawData_loc/"$file"_accession_list.txt.nr
        grep -F -f $rawData_loc/"$file"_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > $rawData_loc/"$file".taxid_table.txt.nr
        cat  $rawData_loc/"$file".taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > $rawData_loc/"$file".taxid_list.txt.nr
-       python3 $rawData_loc/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < $rawData_loc/"$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > $rawData_loc/"$file".lineage_table.txt.nr
+       python3 $present_loc/ncbi.taxonomist.py --sep "|" -d < $rawData_loc/"$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > $rawData_loc/"$file".lineage_table.txt.nr
        cat $rawData_loc/sqlite_table/sqlite_template.nr | sed "s/template/""$file""/g" > $rawData_loc/sqlite_"$file".nr
        sqlite3 sqlite_"$file".nr.summary.sql < sqlite_"$file".nr
        mv $rawData_loc/"$file"_megahit_assemble_nr.edited $rawData_loc/"$file"_megahit_assemble_nr.edited.tsv
-       rm -rf $rawData_loc/simbiont-js
        rm -rf $rawData_loc/sqlite_table
        rm -rf $rawData_loc/"$file".taxid_table.txt.nr $rawData_loc/"$file".taxid_list.txt.nr $rawData_loc/"$file".lineage_table.txt.nr $rawData_loc/"$file".accession_list.txt.nr
        rm -rf $rawData_loc/sqlite_"$file".nr
@@ -250,7 +248,7 @@ if [ $only_rdrp_find -eq 0 ];then
 		   cat ${present_loc}/nr/"$files"_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > ${present_loc}/nr/"$files"_accession_list.txt.nr
 		   grep -F -f ${present_loc}/nr/"$files"_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > ${present_loc}/nr/"$files".taxid_table.txt.nr
 		   cat  ${present_loc}/nr/"$files".taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${present_loc}/nr/"$files".taxid_list.txt.nr
-		   python3 ${present_loc}/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${present_loc}/nr/"$files".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${present_loc}/nr/"$files".lineage_table.txt.nr
+		   python3 ${present_loc}/ncbi.taxonomist.py --sep "|" -d < ${present_loc}/nr/"$files".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${present_loc}/nr/"$files".lineage_table.txt.nr
 		   cat sqlite_table/sqlite_template.nr | sed "s/template/""$files""/g" > sqlite_"$files".nr
 		   sqlite3 sqlite_"$files".nr.summary.sql < sqlite_"$files".nr
 		   mv ${present_loc}/nr/"$files"_megahit_assemble_nr.edited ${present_loc}/nr/"$files"_megahit_assemble_nr.edited.tsv
