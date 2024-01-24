@@ -1,42 +1,22 @@
 # segFinder
 ## Overview
-**segFinder** is an approach based on correlation for the detection of segmented viruses that integrates and subtly extends the methods of load similarity and co-occurrence. See our paper below for more details. DOI: --------- 
+**segFinder** is an approach based on correlation for **the detection of segmented viruses** that integrates and subtly extends the methods of load similarity and co-occurrence. See our paper below for more details. DOI: --------- 
 
 <img src='https://github.com/kong66585/segVirusFinder/blob/main/architecture.png'>
 
 
 ## Installation
 
-we recommend users to directly clone our stable `main` branch and set `scDREAMER` as the working directory. Creating conda environment using ./ENVIRONMENTS/scDREAMER.yml will install all the dependent packages and libraries. scDREAMER can be set up as follows 
+Our recommendation is for users to clone our stable `main` branch directly and designate `segFinder` as the working directory. By using ./Environments/segFinder.yml to create a conda environment, all the necessary packages and libraries will be installed. The setup for segFinder can be done as follows.
 
 ```
-git clone https://github.com/kong66585/segVirusFinder.git
+git clone https://github.com/kong66585/segFinder.git
 cd segFinder/Environments
 conda env create -f segFinder.yml
 conda activate segFinder
 ```
-## What Computational tasks can scDREAMER be used for?
 
-`scDREAMER` suite can be used for:
-1. scDREAMER for an unsupervised integration of multiple batches
-2. scDREAMER-SUP for a supervised integration across multiple batches
-3. scDREAMER-SUP can also be when cell type annotations are missing in the datasets i.e., 10%, 20%, 50%
-4. Atlas level and cross-species integration
-5. Large datasets with ~1 million cells
-
-## Tutorials
-Check out the following Colab notebook to get a flavor of a typical workflow for data integration using scDREAMER and scDREAMER-SUP ([Link to Datasets](https://drive.google.com/drive/folders/1alw75wwWRg9KXopUccPhMh6N3b6dOoE9?usp=sharing)) below. 
-
-1. [scDREAMER applied to human immune integration task](https://colab.research.google.com/drive/10wWVPVeWgHfZL_B8_fRzRIDE1wUq2NvO?usp=sharing)
-2. [scDREMER-SUP applied to human immune cells integration task](https://colab.research.google.com/drive/1t9g7dLKeHfYbPXpTygO1DuXwWV4sJlSB?usp=sharing)
-3. [scDREAMER-SUP applied to human immune cells integration task under 50% missing cell labels setting](https://colab.research.google.com/drive/11DMVjIzx53xt6FBiv8l1YGFl-fVUoJGT?usp=sharing)
-
-## Documentation
-Read the docs: [https://scdreamer.readthedocs.io/en/latest/](https://scdreamer.readthedocs.io/en/latest/)
-
-## Contributing
-In case of any bug reports, enhancement requests, general questions, and other contributions, please create an issue. For more substantial contributions, please fork this repo, push your changes to your fork, and submit a pull request with a good commit message.
 
 ## Cite this article
-Ajita Shree*, Musale Krushna Pavan*, Hamim Zafar. scDREAMER: atlas-level integration of single-cell datasets using deep generative model paired with adversarial classifier. bioRxiv 2022.07.12.499846; doi: https://doi.org/10.1038/s41467-023-43590-8  
+Xue Liu#,1, Jianbin Kong#,1, Yongtao Shan1, Ziyue Yang1, Jiafan Miao1, Name61, Name71, Name81, Name91, Name101, Name111, Name121, Name131, Name14*, Name15*. SegFinder: Segment RNA virus discovery based on correlation in multiple libraries. ----------; doi: -------------------  
 \* equally contributed
