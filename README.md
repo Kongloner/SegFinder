@@ -1,7 +1,7 @@
 # segFinder
 ## Overview
 **segFinder** is an approach based on correlation for the detection of segmented viruses that integrates and subtly extends the methods of load similarity and co-occurrence. See our paper below for more details. DOI: --------- 
-https://github.com/kong66585/segVirusFinder/blob/main/architecture.png
+
 <img src='https://github.com/kong66585/segVirusFinder/blob/main/architecture.png'>
 
 
