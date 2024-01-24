@@ -1,6 +1,6 @@
-# scDREAMER
+# segFinder
 ## Overview
-**scDREAMER** is a single-cell data integration framework that employs a novel adversarial variational autoencoder for learning lower-dimensional cellular embeddings and a batch classifier neural network for the removal of batch effects. The jupyter notebooks for reproducibility of results in the manuscript are available at [https://github.com/Zafar-Lab/scDREAMER-reproducibility](https://github.com/Zafar-Lab/scDREAMER-reproducibility). See our paper below for more details. DOI: https://doi.org/10.1038/s41467-023-43590-8  
+**segFinder** is an approach based on correlation for the detection of segmented viruses that integrate and subtly extend the methods of load similarity and co-occurrence. See our paper below for more details. DOI: --------- 
 
 <img src='https://raw.githubusercontent.com/Zafar-Lab/scDREAMER/main/architecture.png'>
 
