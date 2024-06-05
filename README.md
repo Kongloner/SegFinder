@@ -10,7 +10,7 @@
 Our recommendation is for users to clone our stable `main` branch directly and designate `SegFinder` as the working directory. By using ./Environments/SegFinder.yml to create a conda environment, all the necessary packages and libraries will be installed. The setup for SegFinder can be done as follows.
 
 ```
-git clone https://github.com/kong66585/SegFinder.git
+git clone https://github.com/Kongloner/SegFinder.git
 cd SegFinder/Environments
 conda env create -f SegFinder.yml
 conda activate SegFinder
