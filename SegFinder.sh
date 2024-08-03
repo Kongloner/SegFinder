@@ -154,13 +154,14 @@ if [ $preprocess == true ];then
 		if [ $datatype -eq 1 ]; then 
 			fastp -i $rawData_loc/"$file".fq.gz -o $processed_data/"$file"-fp.fq.gz -w ${thread}
 			ribodetector_cpu -l 100 -i $processed_data/"$file"-fp.fq.gz -t ${thread} -e norrna  -o $processed_data/"$file".clean.fq.gz
-			rm $processed_data/"$file"-fp.fq.gz
+			rm $$processed_data/"$file"-fp.fq.gz
+			rm $rawData_loc/fastp.html $rawData_loc/fastp.json
 		fi
        if [ $datatype -eq 2 ]; then 
 			fastp -i $rawData_loc/"$file"_1.fq.gz -I $rawData_loc/"$file"_2.fq.gz -o $processed_data/"$file"_1-fp.fq.gz -O  $processed_data/"$file"_2-fp.fq.gz -w ${thread}
 			ribodetector_cpu -l 100 -i $processed_data/"$file"_1-fp.fq.gz $processed_data/"$file"_2-fp.fq.gz  -t ${thread} -e norrna  -o $processed_data/"$file".clean_{1,2}.fq.gz
 			rm $processed_data/"$file"_1-fp.fq.gz $processed_data/"$file"_2-fp.fq.gz
-			rm $processed_data/fastp.html $processed_data/fastp.json
+			rm $rawData_loc/fastp.html $rawData_loc/fastp.json
 		fi
 				
 		if [ $assemble_method == spades ]; then
@@ -189,7 +190,7 @@ if [ $preprocess == true ];then
        cat $processed_data/"$file"_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > $processed_data/"$file"_accession_list.txt.nr
        grep -F -f $processed_data/"$file"_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > $processed_data/"$file".taxid_table.txt.nr
        cat  $processed_data/"$file".taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > $processed_data/"$file".taxid_list.txt.nr
-       python3 src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < $processed_data/"$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > $processed_data/"$file".lineage_table.txt.nr
+       python3 simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < $processed_data/"$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > $processed_data/"$file".lineage_table.txt.nr
        cat sqlite_table/sqlite_template.nr | sed "s/template/""$file""/g" > $processed_data/sqlite_"$file".nr
        sqlite3 $processed_data/sqlite_"$file".nr.summary.sql < $processed_data/sqlite_"$file".nr
        mv $processed_data/"$file"_megahit_assemble_nr.edited $processed_data/"$file"_megahit_assemble_nr.edited.tsv
@@ -200,16 +201,16 @@ if [ $preprocess == true ];then
 	   grep -i "virus" $processed_data/"$file"_megahit_assemble_nr.edited.tsv > $processed_data/"$file"_assemble_nr.virus
 	   cat $processed_data/"$file"_assemble_nr.virus | cut -f2 | sort -u > $processed_data/"$file"_assemble_nr.virus.list
 	   seqtk subseq $processed_data/"$file".megahit.fa $processed_data/"$file"_assemble_nr.virus.list > $processed_data/"$file"_assemble_nr.virus.match
+	   diamond makedb --in data/RdRP_only.fasta --db $processed_data/RdRP_only -p ${thread}
 	   diamond  blastx \
 		     --more-sensitive \
 			 -q $processed_data/"$file"_assemble_nr.virus.match \
-			 -d Seg_DB/RdRP/RdRP_only \
+			 -d $processed_data/RdRP_only \
 			 -o $processed_data/"$file"_assemble_nr.rdrp \
 			 -e 1E-3 \
 			 -k 1 \
              -p ${thread} \
              -f 6 qseqid qlen sseqid stitle pident length evalue qstart qend
-
 	   cat $processed_data/"$file"_assemble_nr.rdrp | cut -f1 | sort -u > $processed_data/"$file"_assemble_nr.rdrp.list
 	   seqtk subseq $processed_data/"$file"_assemble_nr.virus.match $processed_data/"$file"_assemble_nr.rdrp.list > $processed_data/"$file".rdrp.virus.match
 	   Rscript src/R/blastn_nt_novirus.R --db ${nt_noViruses_loc} --evalue 1E-10 --input $processed_data/"$file".rdrp.virus.match --out_fasta $processed_data/"$file".rdrp.virus.match.modify --out_tsv $processed_data/"$file".blastn.tsv --threads ${thread}
@@ -217,7 +218,7 @@ if [ $preprocess == true ];then
 	   diamond  blastx \
                 --more-sensitive \
                 -q $processed_data/"$file".rdrp.virus.match.modify \
-                -d Seg_DB/RdRP/RdRP_only \
+                -d  $processed_data/RdRP_only \
                 -o $processed_data/"$file".megahit.fa.rdrp \
                 -e 1E-3 \
                 -k 1 \
