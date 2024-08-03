@@ -82,7 +82,10 @@ for (pkg in bioconductor.packages) {
 }
 ```    
 #### 2) Install R and R package 
-
+``` 
+conda install -c bioconda fastp blast seqtk megahit cd-hit ribodetector spades
+conda install diamond
+``` 
 ### Using    
 Firstly, ??????????????????  
 
