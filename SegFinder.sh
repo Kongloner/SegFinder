@@ -185,19 +185,25 @@ if [ $preprocess == true ];then
 			   -k 1 \
 			   -p ${thread} \
 			   -f 6 qseqid qlen sseqid stitle pident length evalue sstart send   
+	   cd $processed_data
+       cp -rf  ${present_loc}/data/sqlite_table $processed_data
+       cp -rf  ${present_loc}/src/simbiont-js $processed_data
        cp $processed_data/"$file"_assemble_nr $processed_data/"$file"_megahit_assemble_nr
        sed -i "s/#/_/" $processed_data/"$file"_megahit_assemble_nr
        cat $processed_data/"$file"_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > $processed_data/"$file"_accession_list.txt.nr
        grep -F -f $processed_data/"$file"_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > $processed_data/"$file".taxid_table.txt.nr
        cat  $processed_data/"$file".taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > $processed_data/"$file".taxid_list.txt.nr
-       python3 simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < $processed_data/"$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > $processed_data/"$file".lineage_table.txt.nr
-       cat sqlite_table/sqlite_template.nr | sed "s/template/""$file""/g" > $processed_data/sqlite_"$file".nr
+       python3 $processed_data/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < $processed_data/"$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > $processed_data/"$file".lineage_table.txt.nr
+       cat $processed_data/sqlite_table/sqlite_template.nr | sed "s/template/""$file""/g" > $processed_data/sqlite_"$file".nr
        sqlite3 $processed_data/sqlite_"$file".nr.summary.sql < $processed_data/sqlite_"$file".nr
        mv $processed_data/"$file"_megahit_assemble_nr.edited $processed_data/"$file"_megahit_assemble_nr.edited.tsv
+       rm -rf $processed_data/simbiont-js
+       rm -rf $processed_data/sqlite_table
        rm -rf $processed_data/"$file".taxid_table.txt.nr $processed_data/"$file".taxid_list.txt.nr $processed_data/"$file".lineage_table.txt.nr $processed_data/"$file".accession_list.txt.nr
        rm -rf $processed_data/sqlite_"$file".nr
        rm -rf $processed_data/sqlite_"$file".nr.summary.sql
 
+       cd $present_loc
 	   grep -i "virus" $processed_data/"$file"_megahit_assemble_nr.edited.tsv > $processed_data/"$file"_assemble_nr.virus
 	   cat $processed_data/"$file"_assemble_nr.virus | cut -f2 | sort -u > $processed_data/"$file"_assemble_nr.virus.list
 	   seqtk subseq $processed_data/"$file".megahit.fa $processed_data/"$file"_assemble_nr.virus.list > $processed_data/"$file"_assemble_nr.virus.match
@@ -230,9 +236,9 @@ if [ $preprocess == true ];then
 	    rm -rf $processed_data/"$file".assemble $processed_data/"$file"_assemble_nr.rdrp.list 
 	    rm -rf $processed_data/"$file"_accession_list.txt.nr $processed_data/"$file"_megahit_assemble_nr $processed_data/"$file"_assemble_nr.rdrp.list $processed_data/"$file"_assemble_nr.virus.list
 
-	    mv $processed_data/"$file".megahit.fa.rdrp.fasta  $rdrp/"$file".megahit.fa.megahit.rdrp.virus.match
-		mv $processed_data/"$file".megahit.fa  $megahit/"$file".megahit.fa
-		mv $processed_data/"$file".megahit.fa.nr  $nr/"$file".megahit.fa.nr
+	    cp $processed_data/"$file".megahit.fa.rdrp.fasta  $rdrp/"$file".megahit.fa.megahit.rdrp.virus.match
+		cp $processed_data/"$file".megahit.fa  $megahit/"$file".megahit.fa
+		cp $processed_data/"$file".megahit.fa.nr  $nr/"$file".megahit.fa.nr
 		awk '{print $0}' $rdrp/"$file".megahit.fa.megahit.rdrp.virus.match >> $rdrp/total.rdrp.virus
 	  
   done
