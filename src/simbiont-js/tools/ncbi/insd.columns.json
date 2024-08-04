@@ -1,0 +1,15 @@
+{
+  "locus" :
+      [
+        "locus",
+        "organism"
+      ],
+  "feature" :
+      [
+        "accession",
+        "locus_tag",
+        "product",
+        "protein_id"
+      ],
+  "comment" : "ToDo: use links, e.g. cds:[feature]"
+}

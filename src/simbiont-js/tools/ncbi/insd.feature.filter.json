@@ -1,0 +1,48 @@
+{
+  "locus":
+  {
+    "project" : 1,
+    "source"  : 1,
+    "locus"   : 1,
+    "length"  : 1,
+    "moltype" : 1,
+    "organism"  : 1,
+    "taxonomy"  : 1,
+    "topology"  : 1,
+    "division"  : 1,
+    "definition"  : 1,
+    "strandedness"  : 1,
+    "primary-accession" : 1,
+    "accession-version" : 1
+  },
+  "feature":
+  {
+    "to"    : 1,
+    "from"  : 1,
+    "accession" : 1
+  },
+  "source":
+  {
+    "host"    : 1,
+    "segment" : 1,
+    "country" : 1,
+    "isolate"   : 1,
+    "organism"  : 1,
+    "mol_type"  : 1,
+    "chromosome"  : 1,
+    "collection_date" : 1
+  },
+  "gene" :
+  {
+    "locus_tag"   : 1,
+    "codon_start" : 1
+  },
+  "cds" :
+  {
+    "product"     : 1,
+    "locus_tag"   : 1,
+    "codon_start" : 1,
+    "protein_id"  : 1,
+    "transl_table"  : 1
+  }
+}

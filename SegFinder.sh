@@ -1,21 +1,20 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Function to handle errors
 error_exit() {
     echo "$1" 1>&2
-    return 1
+    exit 1
 }
 
 # Function to run a command and handle errors
 run_command() {
-    command_output=$("$@" 2>&1)
-    command_exit_code=$?
-    if [ $command_exit_code -ne 0 ]; then
+    echo "Running command: $@"
+    if ! "$@" 2>&1; then
         echo "Error running command: $@" 1>&2
-        echo "$command_output" 1>&2
         error_exit "Failed to run command: $@"
-    else
-        echo "$command_output"
     fi
 }
 
@@ -222,8 +221,8 @@ if [ $preprocess == true ];then
        grep -F -f $processed_data/"$file"_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > $processed_data/"$file".taxid_table.txt.nr
        cat  $processed_data/"$file".taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > $processed_data/"$file".taxid_list.txt.nr
        run_command python3 $processed_data/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < $processed_data/"$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > $processed_data/"$file".lineage_table.txt.nr
-       cat $processed_data/sqlite_table/sqlite_template.nr | sed "s/template/""$file""/g" > $processed_data/sqlite_"$file".nr
-       run_command sqlite3 $processed_data/sqlite_"$file".nr.summary.sql < $processed_data/sqlite_"$file".nr
+       cat $processed_data/sqlite_table/sqlite_template.nr | sed "s/template/""$file""/g" > sqlite_"$file".nr
+       run_command sqlite3 $processed_data/sqlite_"$file".nr.summary.sql < sqlite_"$file".nr
        mv $processed_data/"$file"_megahit_assemble_nr.edited $processed_data/"$file"_megahit_assemble_nr.edited.tsv
        rm -rf $processed_data/simbiont-js
        rm -rf $processed_data/sqlite_table
