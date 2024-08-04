@@ -127,17 +127,16 @@ validate_params() {
 validate_params
 
 # Set output directories
-if [ -z $out_loc ]; then
+if [ -z "$out_loc" ]; then
     out_loc="./"
 fi
-megahit=$out_loc/megahit
-nr=$out_loc/nr
-rdrp=$out_loc/rdrp
-network=$out_loc/network
-processed_data=$out_loc/processed_data
 
-# Create output directories
-mkdir -p "$megahit" "$nr" "$rdrp" "$network" "$processed_data"
+megahit="$out_loc/megahit"
+nr="$out_loc/nr"
+rdrp="$out_loc/rdrp"
+network="$out_loc/network"
+processed_data="$out_loc/processed_data"
+
 
 chmod +x ./bin/align_and_estimate_abundance.pl
 chmod +x ./bin/ORFfinder
@@ -148,6 +147,7 @@ result_files=($(ls $rawData_loc/*.fq.gz | sed -E 's/_1.fq.gz|_2.fq.gz|.fq.gz//g'
 
 #########################part1#####data preprocessing###############################
 if [ $preprocess == true ];then
+    mkdir -p "$processed_data"
 	for file in "${result_files[@]}";
 	do
 #########################assemble###################################################
@@ -185,7 +185,7 @@ if [ $preprocess == true ];then
 			   -k 1 \
 			   -p ${thread} \
 			   -f 6 qseqid qlen sseqid stitle pident length evalue sstart send   
-	   cd $processed_data
+
        cp -rf  ${present_loc}/data/sqlite_table $processed_data
        cp -rf  ${present_loc}/src/simbiont-js $processed_data
        cp $processed_data/"$file"_assemble_nr $processed_data/"$file"_megahit_assemble_nr
@@ -203,7 +203,6 @@ if [ $preprocess == true ];then
        rm -rf $processed_data/sqlite_"$file".nr
        rm -rf $processed_data/sqlite_"$file".nr.summary.sql
 
-       cd $present_loc
 	   grep -i "virus" $processed_data/"$file"_megahit_assemble_nr.edited.tsv > $processed_data/"$file"_assemble_nr.virus
 	   cat $processed_data/"$file"_assemble_nr.virus | cut -f2 | sort -u > $processed_data/"$file"_assemble_nr.virus.list
 	   seqtk subseq $processed_data/"$file".megahit.fa $processed_data/"$file"_assemble_nr.virus.list > $processed_data/"$file"_assemble_nr.virus.match
@@ -235,21 +234,24 @@ if [ $preprocess == true ];then
 	    mv $processed_data/"$file"_assemble_nr $processed_data/"$file".megahit.fa.nr
 	    rm -rf $processed_data/"$file".assemble $processed_data/"$file"_assemble_nr.rdrp.list 
 	    rm -rf $processed_data/"$file"_accession_list.txt.nr $processed_data/"$file"_megahit_assemble_nr $processed_data/"$file"_assemble_nr.rdrp.list $processed_data/"$file"_assemble_nr.virus.list
-
-	    cp $processed_data/"$file".megahit.fa.rdrp.fasta  $rdrp/"$file".megahit.fa.megahit.rdrp.virus.match
-		cp $processed_data/"$file".megahit.fa  $megahit/"$file".megahit.fa
-		cp $processed_data/"$file".megahit.fa.nr  $nr/"$file".megahit.fa.nr
-		awk '{print $0}' $rdrp/"$file".megahit.fa.megahit.rdrp.virus.match >> $rdrp/total.rdrp.virus
-	  
+  
   done
 fi
 
 if [ $only_rdrp_find -eq 0 ];then
 	########################part2 finding segmented rna virus###########################
+	mkdir -p "$megahit" "$nr" "$rdrp" "$network" 
+	for file in "${result_files[@]}";
+	do
+	cp $processed_data/"$file".megahit.fa.rdrp.fasta  $rdrp/"$file".megahit.fa.megahit.rdrp.virus.match
+	cp $processed_data/"$file".megahit.fa  $megahit/"$file".megahit.fa
+	cp $processed_data/"$file".megahit.fa.nr  $nr/"$file".megahit.fa.nr
+	awk '{print $0}' $rdrp/"$file".megahit.fa.megahit.rdrp.virus.match  >> $rdrp/total.rdrp.virus
+	done;
 	if [ $library_ID_flag -eq 0 ];
 	then
 		mkdir -p $rdrp/total.rdrp.megahit.fa_contigs
-		for file in `cat ${present_loc}/file_list.txt`;
+		for file in "${result_files[@]}";
 		do
 		if [ $datatype -eq 1 ]; then perl bin/align_and_estimate_abundance.pl --transcripts $rdrp/total.rdrp.virus --seqType fq --single $processed_data/"$file".clean.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $rdrp/"$file"_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
 		if [ $datatype -eq 2 ]; then perl bin/align_and_estimate_abundance.pl --transcripts $rdrp/total.rdrp.virus --seqType fq --left $processed_data/"$file".clean_1.fq.gz --right $processed_data/"$file".clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $rdrp/"$file"_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
