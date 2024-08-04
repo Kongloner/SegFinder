@@ -14,8 +14,11 @@ run_command() {
         echo "Error running command: $@" 1>&2
         echo "$command_output" 1>&2
         error_exit "Failed to run command: $@"
+    else
+        echo "$command_output"
     fi
 }
+
 
 # Usage function to display help message
 usage(){
