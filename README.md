@@ -83,7 +83,7 @@ for (pkg in bioconductor.packages) {
 ```    
 #### 2) Install other necessary tools 
 ``` 
-conda install -c bioconda fastp blast seqtk megahit cd-hit ribodetector spades
+conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector spades
 conda install diamond==2.0.15
 ``` 
 ### Using    
