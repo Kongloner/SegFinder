@@ -92,9 +92,9 @@ Firstly, ??????????????????
 ```./SegFinder.sh [option] --help``` for **help**
 #### Step 1: discovery of RdRP for RNA viruses  
 ```shell
-./SegFinder.sh --indata PATH/data \
+./SegFinder.sh --indata testdata \
                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/nt/nt_noViruses \
+               --nt_noViruses Seg_DB/nt_noViruses \
                --nt Seg_DB/nt \
                --thread 20 \
                --datatype 2 \
@@ -109,7 +109,7 @@ Notice: ????????? the file_list.txt should be given or not???????????????
 #### Step 2: segmented RNA virus finder      
 Then,?????????????????????????????????????    
 ```shell
-./SegFinder.sh --indata PATH/data \
+./SegFinder.sh --indata testdata \
                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
                --nt_noViruses Seg_DB/nt_noViruses \
                --nt Seg_DB/nt  \
