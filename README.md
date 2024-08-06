@@ -98,7 +98,8 @@ md5sum -c prot.accession2taxid.gz.md5
 gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ```
 #### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
-#### 3) [NCBI Nucleotide Sequence Database (NT) and Virus-free non-redundant nucleotide (virus-free nt)](./flow/db_NT.md)
+#### 3) [NCBI Nucleotide Sequence Database (NT)](./flow/db_NT.md)
+#### 4) [Virus-free non-redundant nucleotide (virus-free nt)](./flow/db_nt_noViruses.md)
 
 
 ### Using    
