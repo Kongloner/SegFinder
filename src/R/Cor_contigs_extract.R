@@ -1,12 +1,12 @@
 rm(list = ls())
 
-cat("Loading of the libraries.... ")
+cat("Loading of the libraries.... \n")
 suppressMessages(library(openxlsx))
 suppressMessages(library(dplyr))
 suppressMessages(library(tidyr))
 suppressMessages(library(data.table))
 suppressMessages(library(igraph))
-cat("... done ! ")
+cat("... done ! \n")
 
 #### Abundance correlation clustering result filtering ####
 args <- commandArgs(T)
@@ -504,7 +504,7 @@ if(length(index) > 1){
     cat('cannot create network plot!')
   }
 }else{
-  cat('cannot find any other contigs correlated to the contig that you have inputted!')
+  cat('cannot find any other contigs correlated to the contig that you have inputted!\n')
 }
 
  

@@ -206,7 +206,7 @@ if [ $preprocess == true ];then
         echo "----Starting RNA virus RdRP finding for $file----"
 	    diamond blastx \
 			   -q "$file".megahit.fa \
-			   -d ${nr_loc}/nr \
+			   -d ${nr_loc} \
 			   -o "$file"_assemble_nr \
 			   -e 1E-4 \
 			   -k 1 \
@@ -217,7 +217,7 @@ if [ $preprocess == true ];then
        cp "$file"_assemble_nr "$file"_megahit_assemble_nr
        sed -i "s/#/_/" "$file"_megahit_assemble_nr
        cat "$file"_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > "$file"_accession_list.txt.nr
-       grep -F -f "$file"_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > "$file".taxid_table.txt.nr
+       grep -F -f "$file"_accession_list.txt.nr $taxidDB_loc > "$file".taxid_table.txt.nr
        cat  "$file".taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > "$file".taxid_list.txt.nr
        python3 ${present_loc}/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < "$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > "$file".lineage_table.txt.nr
        cat sqlite_table/sqlite_template.nr | sed "s/template/""$file""/g" > sqlite_"$file".nr
@@ -244,7 +244,7 @@ if [ $preprocess == true ];then
 	   cat "$file"_assemble_nr.rdrp | cut -f1 | sort -u > "$file"_assemble_nr.rdrp.list
 	   seqtk subseq "$file"_assemble_nr.virus.match "$file"_assemble_nr.rdrp.list > "$file".rdrp.virus.match
 	   cd ${present_loc}
-	   Rscript ${present_loc}/src/R/blastn_nt_novirus.R --db ${nt_noViruses_loc}/nt_noViruses --evalue 1E-10 --input ${processed_data}/"$file".rdrp.virus.match --out_fasta ${processed_data}/"$file".rdrp.virus.match.modify --out_tsv ${processed_data}/"$file".blastn.tsv --threads ${thread}
+	   Rscript ${present_loc}/src/R/blastn_nt_novirus.R --db ${nt_noViruses_loc} --evalue 1E-10 --input ${processed_data}/"$file".rdrp.virus.match --out_fasta ${processed_data}/"$file".rdrp.virus.match.modify --out_tsv ${processed_data}/"$file".blastn.tsv --threads ${thread}
 	   cd ${processed_data}	
 	   diamond  blastx \
                 --more-sensitive \
@@ -364,7 +364,7 @@ if [ $only_rdrp_find -eq 0 ];then
 		sed  "s/>//g" ${library_ID}.list > ${library_ID}.list.tsv
 		seqtk subseq ${library_ID}.megahit.fa  ${library_ID}.list.tsv > ${library_ID}.re.fasta
 	    cd ${present_loc}    
-		Rscript ${present_loc}/src/R/blastn_nt_novirus.R --evalue 1E-3 --db ${nt_noViruses_loc}/nt_noViruses --input ${megahit}/${library_ID}.re.fasta --out_fasta ${megahit}/${library_ID}.re.fasta.modify --out_tsv ${megahit}/${library_ID}.re.blastn.tsv --threads ${thread}
+		Rscript ${present_loc}/src/R/blastn_nt_novirus.R --evalue 1E-3 --db ${nt_noViruses_loc} --input ${megahit}/${library_ID}.re.fasta --out_fasta ${megahit}/${library_ID}.re.fasta.modify --out_tsv ${megahit}/${library_ID}.re.blastn.tsv --threads ${thread}
 	    cd ${megahit}
 		awk -F " " '{print $1}' ${library_ID}.re.blastn.tsv | uniq > ${library_ID}.re.blastn.txt
 	    
@@ -421,7 +421,7 @@ if [ $only_rdrp_find -eq 0 ];then
 		sed -i "s/#/_/" $megahit/${library_ID}_megahit_assemble_nr.edited.tsv
 		cp $rdrp/${library_ID}.rdrp.list.tsv  $megahit
 		Rscript ${present_loc}/src/R/coefficient-matrix.R ${library_ID} $megahit  
-		blastn -query $megahit/"${library_ID}".re.fasta -db $nt_loc/nt -out $megahit/"${library_ID}"_megahit_assemble_re_nt.tsv -evalue 1E-3 -outfmt "6 qseqid qlen sacc salltitles pident length evalue sstart send" -max_target_seqs 5 -num_threads ${thread}	
+		blastn -query $megahit/"${library_ID}".re.fasta -db $nt_loc -out $megahit/"${library_ID}"_megahit_assemble_re_nt.tsv -evalue 1E-3 -outfmt "6 qseqid qlen sacc salltitles pident length evalue sstart send" -max_target_seqs 5 -num_threads ${thread}	
 		diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db $megahit/RdRP_only -p ${thread}
 		diamond blastx -q ${present_loc}/rdrp/${library_ID}.rdrp.fasta -d $megahit/RdRP_only -o $megahit/${library_ID}.megahit.fa.rdrp.tsv --more-sensitive -e 1E-3 -k 5 -p ${thread} -f 6 qseqid qlen sseqid stitle pident length evalue sstart send
 		cp $nr/${library_ID}_megahit_assemble_nr $megahit/${library_ID}_megahit_assemble_nr.tsv

@@ -1,13 +1,13 @@
 rm(list = ls())
 
-cat("Loading of the libraries.... ")
+cat("Loading of the libraries.... \n")
 suppressMessages(library(dplyr))
 suppressMessages(library(data.table))
 suppressMessages(library(foreach))
 suppressMessages(library(doParallel))
 suppressMessages(library(abind))
 suppressMessages(library(stringr))
-cat("... done ! ")
+cat("... done ! \n")
 
 options(future.globals.maxSize = 100000 * 1024^2)
 

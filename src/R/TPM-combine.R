@@ -1,8 +1,8 @@
 rm(list = ls())
 
-cat("Loading of the libraries.... ")
+cat("Loading of the libraries.... \n")
 suppressMessages(library(dplyr))
-cat("... done ! ")
+cat("... done ! \n")
 #### merge the TPM of all contigs from all libraries and generates a CSV output.
 
 args <- commandArgs(T)

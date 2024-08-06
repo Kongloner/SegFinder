@@ -1,9 +1,9 @@
 rm(list = ls())
 
-cat("Loading of the libraries.... ")
+cat("Loading of the libraries.... \n")
 suppressMessages(library(stringr))
 suppressMessages(library(dplyr))
-cat("... done ! ")
+cat("... done ! \n")
 
 #### Replace all sections with empty annotation information with ‘Viruses’ to facilitate subsequent calculations ####
 args <- commandArgs(T)
