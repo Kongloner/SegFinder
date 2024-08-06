@@ -27,6 +27,7 @@ sudo apt install sqlite3 libsqlite3-dev git-all
 #### 3) Clone repository to the current directory
 ```shell
 git clone https://github.com/Kongloner/SegFinder.git
+chmod +x SegFinder/SegFinder.sh
 ```
 ### step2: Install conda and necessary tools
 #### 1) Download anaconda3
