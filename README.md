@@ -107,7 +107,7 @@ gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 
 ```./SegFinder.sh [option] --help``` for **help**
 
-Assuming all databases are stored in the SegDB folder in the current working directory.
+Assuming all databases are stored in the SegDB folder in the current working directory. Of course, you can input the actual paths of these three databases (NR, NT, and non-viral NT) according to your specific situation; the paths provided here are just for example.
 #### Step 1: discovery of RdRP for RNA viruses  
 ```shell
 ./SegFinder.sh --indata testdata \
