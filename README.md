@@ -13,7 +13,7 @@ SegFinder detection pipeline. a, Schematic overview of the discovery of RdRP for
 
 Our recommendation is for users to clone our stable `main` branch directly and designate `SegFinder` as the working directory. The setup for SegFinder can be done as follows.
 
-### step1: update git and clone repository
+### step1: Update git and clone repository
 #### 1) centos
 ```
 sudo yum update
@@ -28,12 +28,12 @@ sudo apt install sqlite3 libsqlite3-dev git-all
 ```
 git clone https://github.com/Kongloner/SegFinder.git
 ```
-### step2: install conda and necessary tools
-#### 1) download anaconda3
+### step2: Install conda and necessary tools
+#### 1) Download anaconda3
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
 ```
-#### 2) install conda
+#### 2) Install conda
 ```
 sh Anaconda3-2022.05-Linux-x86_64.sh
 ##### Notice: Select Yes to update ~/.bashrc
@@ -41,24 +41,22 @@ sh Anaconda3-2022.05-Linux-x86_64.sh
 ```
 source ~/.bashrc
 ```
-#### 3) create a virtual environment: python=3.9.13
+#### 3) Create a virtual environment: python=3.9.13
 ```
 conda create -n SegFinder python=3.9.13
 ```
 
-#### 4) activate SegFinder and install necessary tools 
+#### 4) Activate SegFinder and install necessary tools 
 ```
-conda activate SegFinder
-```
-```    
+conda activate SegFinder   
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
 conda install diamond==2.0.15
 ``` 
 
-### step3:  install R and R package  
+### step3: Install R and R package  
 - R>=4.2
 
-1 . The first step is to install [**R software**](https://www.r-project.org/). Once this is done, several packages  have to be installed too. To do so start a R session and type :
+The first step is to install [**R software**](https://www.r-project.org/). Once this is done, several packages  have to be installed too. To do so start a R session and type :
 ```
 # Some users can accelerate by mirror
 # options(BioC_mirror="https://mirrors.tuna.tsinghua.edu.cn/bioconductor/")
@@ -84,6 +82,12 @@ for (pkg in bioconductor.packages) {
     }
 }
 ```
+
+### step4: Downloading and configuring the database
+
+**prot.accession2taxid**
+
+
 ### Using    
 Firstly, the software aim to find the RdRp of the libraries input.
 
