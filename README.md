@@ -1,5 +1,5 @@
 # SegFinder   
-**SegFinder** is a correlation-based approach that enhances load similarity and co-occurrence methods to **detect new genomic segments of RNA viruses** by analyzing abundance patterns and their correlations across samples.
+**SegFinder** is a correlation-based approach that enhances abundance similarity and co-occurrence methods to **detect new genomic segments of RNA viruses** by analyzing abundance patterns and their correlations across samples.
 
 ## 1. segmented virus finder workflow  
 
@@ -27,6 +27,7 @@ sudo apt install sqlite3 libsqlite3-dev git-all
 #### 3) Clone repository to the current directory
 ```shell
 git clone https://github.com/Kongloner/SegFinder.git
+chmod +x SegFinder/SegFinder.sh
 ```
 ### step2: Install conda and necessary tools
 #### 1) Download anaconda3
@@ -50,7 +51,7 @@ conda create -n SegFinder python=3.9.13
 ```shell
 conda activate SegFinder   
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
-conda install diamond==2.0.15
+conda install diamond==2.1.8
 ``` 
 
 ### step3: Install R and R package  
@@ -98,42 +99,43 @@ md5sum -c prot.accession2taxid.gz.md5
 gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ```
 #### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
-#### 3) [NCBI Nucleotide Sequence Database (NT) and Virus-free non-redundant nucleotide (virus-free nt)](./flow/db_NT.md)
+#### 3) [NCBI Nucleotide Sequence Database (NT)](./flow/db_NT.md)
+#### 4) [Virus-free non-redundant nucleotide (Virus-free NT)](./flow/db_nt_noViruses.md)
 
 
 ### Using    
 
 ```./SegFinder.sh [option] --help``` for **help**
+
+Assuming all databases are stored in the SegDB folder in the current working directory.
 #### Step 1: discovery of RdRP for RNA viruses  
 ```shell
 ./SegFinder.sh --indata testdata \
-               --taxidDB ./Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses ./Seg_DB/NT/nt_noViruses \
-               --nt ./Seg_DB/NT/nt \
+               --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
+               --nt_noViruses Seg_DB/NT/nt_noViruses \
+               --nt Seg_DB/NT/nt \
                --thread 20 \
                --datatype 2 \
                --method salmon \
                --preprocess true  \
                --assemble megahit  \
-               --nr Seg_DB/nr/nr \
+               --nr Seg_DB/NR/nr \
                --only_rdrp_find 1
 ```
-Notice: 
 
-#### Step 2: segmented RNA virus finder      
-Then,?????????????????????????????????????    
+#### Step 2: segmented RNA virus finder        
 ```shell
 ./SegFinder.sh --indata testdata \
                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/nt_noViruses \
-               --nt Seg_DB/nt  \
+               --nt_noViruses Seg_DB/NT/nt_noViruses \
+               --nt Seg_DB/NT/nt  \
                --thread 20 \
                --rm_length 600 \
                --datatype 2 \
                --cor 0.8 \
                --library_ID $file \
                --method salmon  \
-               --nr Seg_DB/nr
+               --nr Seg_DB/NR/nr
 ``` 
 
 

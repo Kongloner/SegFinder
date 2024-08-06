@@ -21,13 +21,13 @@ The files are large and download times may vary depending on your network speed.
 
   - **1.2 Check for the file integrity.**
     ```shell
-      md5sum -c nt.gz.md5
+    md5sum -c nt.gz.md5
     ```
       If the result is ok, then next step
 
   - **1.3 Using makeblastdb to build the index.**
     ```shell
-       makeblastdb -in nt.gz -dbtype nucl -out NT/nt
+    makeblastdb -in nt.gz -dbtype nucl -out NT/nt
     ```
 
 ### 2. From the pre-builded BLAST index
