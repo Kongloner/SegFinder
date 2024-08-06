@@ -105,6 +105,7 @@ gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ### Using    
 
 ```./SegFinder.sh [option] --help``` for **help**
+
 Assuming all databases are stored in the SegDB folder in the current working directory.
 #### Step 1: discovery of RdRP for RNA viruses  
 ```shell
