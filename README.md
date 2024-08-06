@@ -51,7 +51,7 @@ conda create -n SegFinder python=3.9.13
 conda activate SegFinder
 ```
 ```    
-conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades
+conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
 conda install diamond==2.0.15
 ``` 
 
