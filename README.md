@@ -98,26 +98,24 @@ md5sum -c prot.accession2taxid.gz.md5
 gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ```
 #### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
-#### 3) [NCBI Nucleotide Sequence Database (NT)](./flow/db_NT.md)
-#### 4) Virus-free non-redundant nucleotide (virus-free nt)
+#### 3) [NCBI Nucleotide Sequence Database (NT) and Virus-free non-redundant nucleotide (virus-free nt)](./flow/db_NT.md)
 
 
 ### Using    
-Firstly, the software aim to find the RdRp of the libraries input.
 
 ```./SegFinder.sh [option] --help``` for **help**
 #### Step 1: discovery of RdRP for RNA viruses  
 ```shell
 ./SegFinder.sh --indata testdata \
-               --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/nt_noViruses \
-               --nt Seg_DB/nt \
+               --taxidDB ./Seg_DB/accession2taxid/prot.accession2taxid \
+               --nt_noViruses ./Seg_DB/NT/nt_noViruses \
+               --nt ./Seg_DB/NT/nt \
                --thread 20 \
                --datatype 2 \
                --method salmon \
                --preprocess true  \
                --assemble megahit  \
-               --nr Seg_DB/nr \
+               --nr Seg_DB/nr/nr \
                --only_rdrp_find 1
 ```
 Notice: 
@@ -136,17 +134,7 @@ Then,?????????????????????????????????????
                --library_ID $file \
                --method salmon  \
                --nr Seg_DB/nr
-```
-
-#### Parameters   
-1) Input data parameters:     
-* indata: `Path`, the input fastq filepath  
-* taxidDB: `Path`, ??????????????????????
-* nt_noViruses: `Path`,    
-* nt: `Path`,          
-
-2)  to be write??????????????????
- 
+``` 
 
 
 ## Cite this article
