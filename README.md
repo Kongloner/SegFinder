@@ -85,7 +85,21 @@ for (pkg in bioconductor.packages) {
 
 ### step4: Downloading and configuring the database
 
-**prot.accession2taxid**
+#### 1) accession2taxid
+```
+#Download the `PROT_ACC2TAXID` file
+wget -c https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
+wget -c https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz.md5
+
+#Check for the file integrity
+md5sum -c prot.accession2taxid.gz.md5
+
+#Unzip the files and onfiguration
+gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
+```
+#### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
+#### 3) [NCBI Nucleotide Sequence Database (NT)](./flow/db_NT.md)
+#### 4) Virus-free non-redundant nucleotide (virus-free nt)
 
 
 ### Using    
