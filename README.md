@@ -28,7 +28,7 @@ sudo apt install sqlite3 libsqlite3-dev git-all
 ```
 git clone https://github.com/Kongloner/SegFinder.git
 ```
-### step2: install python 3.9
+### step2: install conda and necessary tools
 #### 1) download anaconda3
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
@@ -46,13 +46,16 @@ source ~/.bashrc
 conda create -n SegFinder python=3.9.13
 ```
 
-#### 4) activate SegFinder
+#### 4) activate SegFinder and install necessary tools 
 ```
 conda activate SegFinder
 ```
-### step3:  install other requirements
-#### 1) Install R and R package 
+```    
+conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
+conda install diamond==2.0.15
+``` 
 
+### step3:  install R and R package  
 - R>=4.2
 
 1 . The first step is to install [**R software**](https://www.r-project.org/). Once this is done, several packages  have to be installed too. To do so start a R session and type :
@@ -71,7 +74,7 @@ for (pkg in cran.packages) {
   }
 }
 ```
-``` 
+```
 # install packages from Bioconductor
 bioconductor.packages <- c("GenomeInfoDbData", "Biostrings")
 
@@ -80,14 +83,9 @@ for (pkg in bioconductor.packages) {
         BiocManager::install(pkg, ask = F, update = F)
     }
 }
-```    
-#### 2) Install other necessary tools 
-``` 
-conda install -c bioconda fastp blast seqtk megahit cd-hit ribodetector spades
-conda install diamond==2.0.15
-``` 
+```
 ### Using    
-Firstly, ??????????????????  
+Firstly, the software aim to find the RdRp of the libraries input.
 
 ```./SegFinder.sh [option] --help``` for **help**
 #### Step 1: discovery of RdRP for RNA viruses  
@@ -104,7 +102,7 @@ Firstly, ??????????????????
                --nr Seg_DB/nr \
                --only_rdrp_find 1
 ```
-Notice: ????????? the file_list.txt should be given or not???????????????
+Notice: 
 
 #### Step 2: segmented RNA virus finder      
 Then,?????????????????????????????????????    
