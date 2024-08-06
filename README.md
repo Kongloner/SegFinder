@@ -50,7 +50,7 @@ conda create -n SegFinder python=3.9.13
 ```shell
 conda activate SegFinder   
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
-conda install diamond==2.0.15
+conda install diamond==2.1.8
 ``` 
 
 ### step3: Install R and R package  
