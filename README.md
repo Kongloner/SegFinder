@@ -58,7 +58,7 @@ conda install diamond==2.0.15
 ### step3: Install R and R package  
 - R>=4.2
 
-1 . The first step is to install [**R software**](https://www.r-project.org/). Once this is done, several packages  have to be installed too. To do so start a R session and type :
+The first step is to install [**R software**](https://www.r-project.org/). Once this is done, several packages  have to be installed too. To do so start a R session and type :
 ```
 # Some users can accelerate by mirror
 # options(BioC_mirror="https://mirrors.tuna.tsinghua.edu.cn/bioconductor/")
