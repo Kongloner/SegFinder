@@ -1,5 +1,5 @@
 # SegFinder   
-**SegFinder** is a correlation-based approach that enhances load similarity and co-occurrence methods to **detect new genomic segments of RNA viruses** by analyzing abundance patterns and their correlations across samples.
+**SegFinder** is a correlation-based approach that enhances abundance similarity and co-occurrence methods to **detect new genomic segments of RNA viruses** by analyzing abundance patterns and their correlations across samples.
 
 ## 1. segmented virus finder workflow  
 
