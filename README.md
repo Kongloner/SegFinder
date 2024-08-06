@@ -46,20 +46,17 @@ source ~/.bashrc
 conda create -n SegFinder python=3.9.13
 ```
 
-#### 4) activate SegFinder
+#### 4) activate SegFinder and install other necessary tools 
 ```
 conda activate SegFinder
 ```
-
 ```    
-#### 5) Install other necessary tools 
-``` 
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades
 conda install diamond==2.0.15
 ``` 
+
 ### step3:  install other requirements
 #### 1) Install R and R package 
-
 - R>=4.2
 
 1 . The first step is to install [**R software**](https://www.r-project.org/). Once this is done, several packages  have to be installed too. To do so start a R session and type :
@@ -78,7 +75,7 @@ for (pkg in cran.packages) {
   }
 }
 ```
-``` 
+
 # install packages from Bioconductor
 bioconductor.packages <- c("GenomeInfoDbData", "Biostrings")
 
@@ -87,6 +84,7 @@ for (pkg in bioconductor.packages) {
         BiocManager::install(pkg, ask = F, update = F)
     }
 }
+
 ### Using    
 Firstly, ??????????????????  
 
