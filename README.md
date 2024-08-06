@@ -88,14 +88,14 @@ for (pkg in bioconductor.packages) {
 
 #### 1) accession2taxid
 ```shell
-#Download the `PROT_ACC2TAXID` file
+#Download the `prot.accession2taxid.gz` file
 wget -c https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
 wget -c https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz.md5
 
 #Check for the file integrity
 md5sum -c prot.accession2taxid.gz.md5
 
-#Unzip the files and onfiguration
+#Unzip the files
 gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ```
 #### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
