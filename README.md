@@ -128,14 +128,14 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 ./SegFinder.sh --indata testdata \
                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
                --nt_noViruses Seg_DB/NT/nt_noViruses \
-               --nt Seg_DB/nt  \
+               --nt Seg_DB/NT/nt  \
                --thread 20 \
                --rm_length 600 \
                --datatype 2 \
                --cor 0.8 \
                --library_ID $file \
                --method salmon  \
-               --nr Seg_DB/nr
+               --nr Seg_DB/NR/nr
 ``` 
 
 
