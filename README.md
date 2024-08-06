@@ -28,7 +28,7 @@ sudo apt install sqlite3 libsqlite3-dev git-all
 ```
 git clone https://github.com/Kongloner/SegFinder.git
 ```
-### step2: install python 3.9
+### step2: install conda and necessary tools
 #### 1) download anaconda3
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
@@ -46,7 +46,7 @@ source ~/.bashrc
 conda create -n SegFinder python=3.9.13
 ```
 
-#### 4) activate SegFinder and install other necessary tools 
+#### 4) activate SegFinder and install necessary tools 
 ```
 conda activate SegFinder
 ```
@@ -85,7 +85,7 @@ for (pkg in bioconductor.packages) {
 }
 ```
 ### Using    
-Firstly, ??????????????????  
+Firstly, the software aim to find the RdRp of the libraries input.
 
 ```./SegFinder.sh [option] --help``` for **help**
 #### Step 1: discovery of RdRP for RNA viruses  
