@@ -105,28 +105,27 @@ gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ### Using    
 
 ```./SegFinder.sh [option] --help``` for **help**
+Assuming all databases are stored in the SegDB folder in the current working directory.
 #### Step 1: discovery of RdRP for RNA viruses  
 ```shell
 ./SegFinder.sh --indata testdata \
-               --taxidDB ./Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses ./Seg_DB/NT/nt_noViruses \
-               --nt ./Seg_DB/NT/nt \
+               --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
+               --nt_noViruses Seg_DB/NT/nt_noViruses \
+               --nt Seg_DB/NT/nt \
                --thread 20 \
                --datatype 2 \
                --method salmon \
                --preprocess true  \
                --assemble megahit  \
-               --nr Seg_DB/nr/nr \
+               --nr Seg_DB/NR/nr \
                --only_rdrp_find 1
 ```
-Notice: 
 
-#### Step 2: segmented RNA virus finder      
-Then,?????????????????????????????????????    
+#### Step 2: segmented RNA virus finder        
 ```shell
 ./SegFinder.sh --indata testdata \
                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/nt_noViruses \
+               --nt_noViruses Seg_DB/NT/nt_noViruses \
                --nt Seg_DB/nt  \
                --thread 20 \
                --rm_length 600 \
