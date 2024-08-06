@@ -15,39 +15,39 @@ Our recommendation is for users to clone our stable `main` branch directly and d
 
 ### step1: Update git and clone repository
 #### 1) centos
-```
+```shell
 sudo yum update
 sudo yum install sqlite sqlite-devel git-all
 ```
 #### 2) ubuntu
-```
+```shell
 sudo apt-get update
 sudo apt install sqlite3 libsqlite3-dev git-all 
 ```
 #### 3) Clone repository to the current directory
-```
+```shell
 git clone https://github.com/Kongloner/SegFinder.git
 ```
 ### step2: Install conda and necessary tools
 #### 1) Download anaconda3
-```
+```shell
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
 ```
 #### 2) Install conda
-```
+```shell
 sh Anaconda3-2022.05-Linux-x86_64.sh
 ##### Notice: Select Yes to update ~/.bashrc
 ```
-```
+```shell
 source ~/.bashrc
 ```
 #### 3) Create a virtual environment: python=3.9.13
-```
+```shell
 conda create -n SegFinder python=3.9.13
 ```
 
 #### 4) Activate SegFinder and install necessary tools 
-```
+```shell
 conda activate SegFinder   
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
 conda install diamond==2.0.15
@@ -57,12 +57,12 @@ conda install diamond==2.0.15
 - R>=4.2
 
 The first step is to install [**R software**](https://www.r-project.org/). Once this is done, several packages  have to be installed too. To do so start a R session and type :
-```
+```shell
 # Some users can accelerate by mirror
 # options(BioC_mirror="https://mirrors.tuna.tsinghua.edu.cn/bioconductor/")
 # options("repos" = c(CRAN="http://mirrors.cloud.tencent.com/CRAN/"))
 ```
-```
+```shell
 # install packages from CRAN
 cran.packages <- c("BiocManager", "abind", "argparse", "openxlsx", "data.table", "doParallel", "dplyr", "foreach", "magrittr", "stringr", "tidyr", "Matrix", "igraph")
 
@@ -72,7 +72,7 @@ for (pkg in cran.packages) {
   }
 }
 ```
-```
+```shell
 # install packages from Bioconductor
 bioconductor.packages <- c("GenomeInfoDbData", "Biostrings")
 
@@ -85,25 +85,37 @@ for (pkg in bioconductor.packages) {
 
 ### step4: Downloading and configuring the database
 
-**prot.accession2taxid**
+#### 1) accession2taxid
+```shell
+#Download the `PROT_ACC2TAXID` file
+wget -c https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
+wget -c https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz.md5
+
+#Check for the file integrity
+md5sum -c prot.accession2taxid.gz.md5
+
+#Unzip the files and onfiguration
+gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
+```
+#### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
+#### 3) [NCBI Nucleotide Sequence Database (NT) and Virus-free non-redundant nucleotide (virus-free nt)](./flow/db_NT.md)
 
 
 ### Using    
-Firstly, the software aim to find the RdRp of the libraries input.
 
 ```./SegFinder.sh [option] --help``` for **help**
 #### Step 1: discovery of RdRP for RNA viruses  
 ```shell
 ./SegFinder.sh --indata testdata \
-               --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/nt_noViruses \
-               --nt Seg_DB/nt \
+               --taxidDB ./Seg_DB/accession2taxid/prot.accession2taxid \
+               --nt_noViruses ./Seg_DB/NT/nt_noViruses \
+               --nt ./Seg_DB/NT/nt \
                --thread 20 \
                --datatype 2 \
                --method salmon \
                --preprocess true  \
                --assemble megahit  \
-               --nr Seg_DB/nr \
+               --nr Seg_DB/nr/nr \
                --only_rdrp_find 1
 ```
 Notice: 
@@ -122,17 +134,7 @@ Then,?????????????????????????????????????
                --library_ID $file \
                --method salmon  \
                --nr Seg_DB/nr
-```
-
-#### Parameters   
-1) Input data parameters:     
-* indata: `Path`, the input fastq filepath  
-* taxidDB: `Path`, ??????????????????????
-* nt_noViruses: `Path`,    
-* nt: `Path`,          
-
-2)  to be write??????????????????
- 
+``` 
 
 
 ## Cite this article
