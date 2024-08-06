@@ -48,9 +48,7 @@ conda create -n SegFinder python=3.9.13
 
 #### 4) Activate SegFinder and install necessary tools 
 ```
-conda activate SegFinder
-```
-```    
+conda activate SegFinder   
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
 conda install diamond==2.0.15
 ``` 
