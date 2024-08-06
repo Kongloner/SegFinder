@@ -55,8 +55,7 @@ conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector s
 conda install diamond==2.0.15
 ``` 
 
-### step3:  install other requirements
-#### 1) Install R and R package 
+### step3:  install R and R package  
 - R>=4.2
 
 1 . The first step is to install [**R software**](https://www.r-project.org/). Once this is done, several packages  have to be installed too. To do so start a R session and type :
@@ -75,7 +74,7 @@ for (pkg in cran.packages) {
   }
 }
 ```
-
+```
 # install packages from Bioconductor
 bioconductor.packages <- c("GenomeInfoDbData", "Biostrings")
 
@@ -84,7 +83,7 @@ for (pkg in bioconductor.packages) {
         BiocManager::install(pkg, ask = F, update = F)
     }
 }
-
+```
 ### Using    
 Firstly, ??????????????????  
 
@@ -103,7 +102,7 @@ Firstly, ??????????????????
                --nr Seg_DB/nr \
                --only_rdrp_find 1
 ```
-Notice: ????????? the file_list.txt should be given or not???????????????
+Notice: 
 
 #### Step 2: segmented RNA virus finder      
 Then,?????????????????????????????????????    
