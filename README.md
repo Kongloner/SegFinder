@@ -50,6 +50,13 @@ conda create -n SegFinder python=3.9.13
 ```
 conda activate SegFinder
 ```
+
+```    
+#### 5) Install other necessary tools 
+``` 
+conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades
+conda install diamond==2.0.15
+``` 
 ### step3:  install other requirements
 #### 1) Install R and R package 
 
@@ -80,12 +87,6 @@ for (pkg in bioconductor.packages) {
         BiocManager::install(pkg, ask = F, update = F)
     }
 }
-```    
-#### 2) Install other necessary tools 
-``` 
-conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades
-conda install diamond==2.0.15
-``` 
 ### Using    
 Firstly, ??????????????????  
 
