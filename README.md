@@ -105,7 +105,7 @@ gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 
 ### Using    
 
-```./SegFinder.sh [option] --help``` for **help**
+```./SegFinder.sh --help``` for **help**
 
 Assuming all databases are stored in the SegDB folder in the current working directory. Of course, you can input the actual paths of these three databases (NR, NT, and non-viral NT) according to your specific situation; the paths provided here are just for example.
 #### Step 1: discovery of RdRP for RNA viruses  
@@ -140,7 +140,7 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 
 
 ## Cite this article
-Xue Liu#,1, Jianbin Kong#,1, Yongtao Shan1, Ziyue Yang1, Jiafan Miao1, Name61, Name71, Name81, Name91, Name101, Name111, Name121, Name131, Name14*, Name15*. SegFinder: Segment RNA virus discovery based on correlation in multiple libraries. ----------; doi: -------------------  
+Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: Segment RNA virus discovery based on correlation in multiple libraries. ----------; doi: -------------------  
 \# equally contributed    
 
   
