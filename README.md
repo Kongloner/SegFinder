@@ -84,7 +84,7 @@ for (pkg in bioconductor.packages) {
 }
 ```
 
-### step4: Downloading and configuring the database
+### step4: Download and configure the database
 
 #### 1) accession2taxid
 ```shell
