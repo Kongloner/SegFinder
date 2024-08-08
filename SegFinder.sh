@@ -202,8 +202,18 @@ if [ $preprocess == true ];then
 		fi
 		cp ${file}.assemble/${file}.fa_modify ${file}.megahit.fa
 		echo "----Finished assembly of the raw reads for $file----"
+  done
+fi
+
+
+
+
 ### Finding rna virus RdRP ###
+if [ $only_rdrp_find -eq 0 ];then
+	for file in "${result_files[@]}";
+	do
         echo "----Starting RNA virus RdRP finding for $file----"
+		run_command cd ${processed_data}
 	    run_command diamond blastx \
 			   -q ${file}.megahit.fa \
 			   -d ${nr_loc} \
@@ -262,12 +272,12 @@ if [ $preprocess == true ];then
 	    rm -rf ${file}_accession_list.txt.nr ${file}_megahit_assemble_nr ${file}_assemble_nr.rdrp.list ${file}_assemble_nr.virus.list
         cd ${present_loc}
 		echo "----Finished RNA virus RdRP finding for $file----"
-  done
+	done;
 fi
 
 
 if [ $only_rdrp_find -eq 0 ];then
-	########################part2 finding segmented rna virus###########################
+	########################part3 finding segmented rna virus###########################
 
 #	if [ $library_ID_flag -eq 0 ];
 #	then
@@ -450,8 +460,7 @@ if [ $only_rdrp_find -eq 0 ];then
 		mkdir -p $out_loc/${library_ID}
 		mv $megahit  $network $rdrp $out_loc/${library_ID}
 		echo "----Finished Segmented RNA virus finding for library: $library_ID----"
-	done;
-	
+	done;	
 fi
 
 
