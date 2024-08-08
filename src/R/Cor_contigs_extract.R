@@ -10,11 +10,11 @@ cat("... done ! \n")
 
 #### Abundance correlation clustering result filtering ####
 args <- commandArgs(T)
-# args[1] <- 0.79  # cor
-# args[2] <- 'SRR23214418'
-# args[3] <- 0   # TPM
-# args[4] <- 100  # rdrp_multi
-# args[5] <- 20  # non_rdrp_multi
+args[1] <- 0.79  # cor
+args[2] <- 'SRR7102799'
+args[3] <- 0   # TPM
+args[4] <- 100  # rdrp_multi
+args[5] <- 20  # non_rdrp_multi
 
 if (length(args) == 3) {
   args[4] <- 100  # rdrp_multi
@@ -424,7 +424,7 @@ if(length(index) > 1){
     #g
     
 
-    is.simple(g) # Not a simple graph, link count will be high, so need to convert to a simple graph
+   # is.simple(g) # Not a simple graph, link count will be high, so need to convert to a simple graph
     E(g)$weight <- 1
     g <- igraph::simplify(g,
                           remove.multiple = TRUE,
@@ -433,7 +433,6 @@ if(length(index) > 1){
     
     #g
     #g <- delete.vertices(g,which(degree(g) == 0)) # Remove isolated points
-    is.simple(g)
     E(g)$weight <- 1
     
     # Calculate node link count
