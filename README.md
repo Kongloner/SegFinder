@@ -108,36 +108,40 @@ gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ```./SegFinder.sh --help``` for **help**
 
 Assuming all databases are stored in the SegDB folder in the current working directory. Of course, you can input the actual paths of these three databases (NR, NT, and non-viral NT) according to your specific situation; the paths provided here are just for example.
-#### Step 1: discovery of RdRP for RNA viruses  
+#### Step 1: Raw reads Quality Control and Assembly  
 ```shell
 ./SegFinder.sh --indata testdata \
-               --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/NT/nt_noViruses \
-               --nt Seg_DB/NT/nt \
+               --stage preprocess \
+               ---datatype 2  \
+               --assemble megahit \
                --thread 20 \
-               --datatype 2 \
-               --method salmon \
-               --preprocess true  \
-               --assemble megahit  \
-               --nr Seg_DB/NR/nr \
-               --only_rdrp_find 1
 ```
 
-#### Step 2: segmented RNA virus finder        
+#### Step 2: Discovery of RdRP for RNA viruses        
 ```shell
-./SegFinder.sh --indata testdata \
-               --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
+./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
+               --nt_noViruses Seg_DB/NT/nt_noViruses \
+               --nt Seg_DB/NT/nt  \
+               --nr /shilab6/home/public/database/nr/nr \
+               --thread 20 \
+               --datatype 2 \
+               --stage rdrp_find
+```
+
+#### Step 3: segmented RNA virus finder        
+```shell
+./SegFinder.sh --taxidDB /shilab6/home/public/database/others/prot.accession2taxid  --nt_noViruses SegDB/nt_noViruses/nt_noViruses --nt /shilab6/home/public/database/nt/nt --thread 200 --datatype 2 --method salmon --stage segment_find -—library_ID SRR7102799
+./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
                --nt_noViruses Seg_DB/NT/nt_noViruses \
                --nt Seg_DB/NT/nt  \
                --thread 20 \
                --rm_length 600 \
                --datatype 2 \
                --cor 0.8 \
-               --library_ID $file \
                --method salmon  \
-               --nr Seg_DB/NR/nr
+               --stage segment_find \
+               --library_ID SRR7102799 \
 ``` 
-
 
 ## Cite this article
 Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: Segment RNA virus discovery based on correlation in multiple libraries. ----------; doi: -------------------  
