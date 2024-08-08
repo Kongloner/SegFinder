@@ -111,10 +111,10 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 #### Step 1: Raw reads Quality Control and Assembly  
 ```shell
 ./SegFinder.sh --indata testdata \
-               --stage preprocess \
                ---datatype 2  \
                --assemble megahit \
                --thread 20 \
+               --stage preprocess \
 ```
 
 #### Step 2: Discovery of RdRP for RNA viruses        
