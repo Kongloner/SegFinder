@@ -20,6 +20,7 @@
 usage(){
 cat <<'EOF'
 Usage
+ [--stage]... specify the stage of the pipeline to run: preprocess, rdrp_find, or segment_find; default preprocess
  [-o]... the directory to output the results; default ./
  [--indata]... the location of the raw data
  [--incontig]... the contig you want to search
@@ -35,9 +36,7 @@ Usage
  [--min_rdrp_multi]... minimum length of rdrp and their re-assembled contigs to be retained; default 100
  [--min_nordrp_multi]... minimum length of non-rdrp and their re-assembled contigs to be retained; default 20
  [--library_ID]... the library you want to search, can input multiple IDs separated by spaces
- [--preprocess]... whether to preprocess the raw fq data, 'true' or 'false'; default false
  [--assemble]... tthe tool to assemble the raw reads, megahit or spades; default spades
- [--only_rdrp_find]... 1 or 0, 1 means only find RNA virus RdRPs without any other analysis; default 0
  [--min_TPM]... if there exist the contig whose TPM is less than this value, the cluster it is in will be removed; default 200
  [--help]... display this help message
  [--version]... display version information
@@ -52,12 +51,11 @@ min_rdrp_multi=100
 min_nordrp_multi=20
 min_TPM=200
 quantify_method="salmon"
-preprocess="false"
 assemble_method="spades"
-only_rdrp_find=0
+stage="preprocess"
 
 # Parse command-line arguments
-parameters=$(getopt -o o: --long indata:,incontig:,thread:,cor:,datatype:,nt:,nr:,method:,only_rdrp_find:,min_multi:,min_TPM:,assemble:,preprocess:,library_ID:,rm_length:,nt_noViruses:,taxidDB:,help,version -n "$0" -- "$@")
+parameters=$(getopt -o o: --long indata:,incontig:,thread:,cor:,datatype:,nt:,nr:,method:,stage:,min_multi:,min_TPM:,assemble:,library_ID:,rm_length:,nt_noViruses:,taxidDB:,help,version -n "$0" -- "$@")
 if [ $? -ne 0 ]; then echo "Try '$0 --help' for more information."; exit 1; fi
 
 eval set -- "$parameters"
@@ -79,8 +77,7 @@ while true; do
         --datatype) datatype=$2; shift 2;;
         --method) quantify_method=$2; shift 2;;
         --assemble) assemble_method=$2; shift 2;;
-        --only_rdrp_find) only_rdrp_find=$2; shift 2;;
-        --preprocess) preprocess=$2; shift 2;;
+        --stage) stage=$2; shift 2;;
         --taxidDB) taxidDB_loc=$2; shift 2;;
         -o) out_loc=$2; shift 2;;
         --version) echo "$0 version V1.0"; exit;;
@@ -93,33 +90,15 @@ done
 
 # Function to validate input parameters
 validate_params() {
-    if [[ $preprocess != "true" && $preprocess != "false" ]]; then
-        echo "please input true or false!!! --preprocess"
-        exit 1
-    fi
+	# Validate stage parameter
+	valid_stages=("preprocess" "rdrp_find" "virus_find")
+	if [[ -z $stage || ! " ${valid_stages[@]} " =~ " ${stage} " ]]; then
+    	echo "Invalid or missing stage parameter. Please use --stage with one of the following values: preprocess, rdrp_find, segment_find."
+    	exit 1
+	fi
 
     if [[ -z $rawData_loc ]]; then
         echo "please input the location of the raw data!!! --indata"
-        exit 1
-    fi
-
-    if [[ -z $library_ID && $only_rdrp_find -eq 0 ]]; then
-        echo "please input the library_ID!!! --library_ID"
-        exit 1
-    fi
-
-    if [[ -z $nt_loc && $only_rdrp_find -eq 0 ]]; then
-        echo "please input the location of nt!!! --nt"
-        exit 1
-    fi
-
-    if [[ -z $nr_loc && $preprocess == "true" ]]; then
-        echo "please input the location of nr!!! --nr"
-        exit 1
-    fi
-
-    if [[ -z $nt_noViruses_loc && $only_rdrp_find -eq 0 ]]; then
-        echo "please input the location of nt_noViruses database!!! --nt_noViruses"
         exit 1
     fi
 
@@ -128,13 +107,33 @@ validate_params() {
         exit 1
     fi
 
-    if [[ -z $taxidDB_loc ]]; then
-        echo "please input the location of prot.accession2taxid database!!! --taxidDB"
+    if [[ $datatype -ne 1 && $datatype -ne 2 ]]; then
+        echo 'please re_input the type of input data, 1 or 2, for 1 means single type, 2 means double'
         exit 1
     fi
 
-    if [[ $datatype -ne 1 && $datatype -ne 2 ]]; then
-        echo 'please re_input the type of input data, 1 or 2, for 1 means single type, 2 means double'
+    if [[ -z $library_ID && $stage == "segment_find" ]]; then
+        echo "please input the library_ID!!! --library_ID"
+        exit 1
+    fi
+
+    if [[ -z $nt_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
+        echo "please input the location of nt!!! --nt"
+    #    exit 1
+    fi
+
+    if [[ -z $nr_loc && $stage == "rdrp_find" ]]; then
+        echo "please input the location of nr!!! --nr"
+        exit 1
+    fi
+
+    if [[ -z $nt_noViruses_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
+        echo "please input the location of nt_noViruses database!!! --nt_noViruses"
+        exit 1
+    fi
+
+    if [[ -z $taxidDB_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
+        echo "please input the location of prot.accession2taxid database!!! --taxidDB"
         exit 1
     fi
 }
@@ -159,7 +158,7 @@ chmod +x ${present_loc}/bin/ORFfinder
 result_files=($(ls $rawData_loc/*.fq.gz | sed -E 's/_1.fq.gz|_2.fq.gz|.fq.gz//g' | xargs -n 1 basename | sort -u))
 
 #### data preprocessing ####
-if [ $preprocess == true ];then
+if [ $stage == "preprocess" ]; then
     mkdir -p "$processed_data"
 	for file in "${result_files[@]}";
 	do
@@ -203,13 +202,15 @@ if [ $preprocess == true ];then
 		cp ${file}.assemble/${file}.fa_modify ${file}.megahit.fa
 		echo "----Finished assembly of the raw reads for $file----"
   done
+  echo "Preprocessing done. To run the next stage, use --stage rdrp_find"
 fi
 
 
 
 
 ### Finding rna virus RdRP ###
-if [ $only_rdrp_find -eq 0 ];then
+if [ $stage == "rdrp_find" ]; then
+########################part3 finding rdrp###########################
 	for file in "${result_files[@]}";
 	do
         echo "----Starting RNA virus RdRP finding for $file----"
@@ -242,7 +243,7 @@ if [ $only_rdrp_find -eq 0 ];then
 	   cat ${file}_assemble_nr.virus | cut -f2 | sort -u > ${file}_assemble_nr.virus.list
 	   seqtk subseq ${file}.megahit.fa ${file}_assemble_nr.virus.list > ${file}_assemble_nr.virus.match
 	   run_command diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db RdRP_only -p ${thread}
-	   run_command diamond  blastx \
+	   diamond  blastx \
 		     --more-sensitive \
 			 -q ${file}_assemble_nr.virus.match \
 			 -d RdRP_only \
@@ -273,10 +274,11 @@ if [ $only_rdrp_find -eq 0 ];then
         cd ${present_loc}
 		echo "----Finished RNA virus RdRP finding for $file----"
 	done;
+	echo "RdRP finding done. To run the next stage, use --stage virus_find"
 fi
 
 
-if [ $only_rdrp_find -eq 0 ];then
+if [ $stage == "segment_find" ]; then
 	########################part3 finding segmented rna virus###########################
 
 #	if [ $library_ID_flag -eq 0 ];
