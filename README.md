@@ -111,7 +111,7 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 #### Step 1: Raw reads Quality Control and Assembly  
 ```shell
 ./SegFinder.sh --indata testdata \
-               ---datatype 2  \
+               --datatype 2  \
                --assemble megahit \
                --thread 20 \
                --stage preprocess \
