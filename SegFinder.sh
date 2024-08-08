@@ -55,7 +55,6 @@ quantify_method="salmon"
 preprocess="false"
 assemble_method="spades"
 only_rdrp_find=0
-library_ID=""
 
 # Parse command-line arguments
 parameters=$(getopt -o o: --long indata:,incontig:,thread:,cor:,datatype:,nt:,nr:,method:,only_rdrp_find:,min_multi:,min_TPM:,assemble:,preprocess:,library_ID:,rm_length:,nt_noViruses:,taxidDB:,help,version -n "$0" -- "$@")
@@ -90,6 +89,7 @@ while true; do
         *) usage; exit 1;;
     esac
 done
+
 
 # Function to validate input parameters
 validate_params() {
@@ -167,16 +167,16 @@ if [ $preprocess == true ];then
 	    echo "Starting quality control and assembly process..."
 		echo "----Starting quality control for $file----"
 		if [ $datatype -eq 1 ]; then 
-			fastp -i ${rawData_loc}/"$file".fq.gz -o ${processed_data}/"$file"-fp.fq.gz -w ${thread} 
-			ribodetector_cpu -l 100 -i ${processed_data}/"$file"-fp.fq.gz -t ${thread} -e norrna  -o ${processed_data}/"$file".clean.fq.gz 
-			rm ${processed_data}/$"$file"-fp.fq.gz
-			rm ${rawData_loc}/fastp.html ${rawData_loc}/fastp.json
+			fastp -i ${rawData_loc}/${file}.fq.gz -o ${processed_data}/${file}-fp.fq.gz -w ${thread} 
+			ribodetector_cpu -l 100 -i ${processed_data}/${file}-fp.fq.gz -t ${thread} -e norrna  -o ${processed_data}/${file}.clean.fq.gz 
+			rm ${processed_data}/${file}-fp.fq.gz
+			rm $(pwd)/fastp.html $(pwd)/fastp.json
 		fi
        if [ $datatype -eq 2 ]; then 
-			fastp -i ${rawData_loc}/"$file"_1.fq.gz -I ${rawData_loc}/"$file"_2.fq.gz -o ${processed_data}/"$file"_1-fp.fq.gz -O  ${processed_data}/"$file"_2-fp.fq.gz -w ${thread} 
-			ribodetector_cpu -l 100 -i ${processed_data}/"$file"_1-fp.fq.gz ${processed_data}/"$file"_2-fp.fq.gz  -t ${thread} -e norrna  -o ${processed_data}/"$file".clean_{1,2}.fq.gz 
-			rm ${processed_data}/"$file"_1-fp.fq.gz ${processed_data}/"$file"_2-fp.fq.gz
-			rm ${rawData_loc}/fastp.html ${rawData_loc}/fastp.json
+			fastp -i ${rawData_loc}/${file}_1.fq.gz -I ${rawData_loc}/${file}_2.fq.gz -o ${processed_data}/${file}_1-fp.fq.gz -O  ${processed_data}/${file}_2-fp.fq.gz -w ${thread} 
+			ribodetector_cpu -l 100 -i ${processed_data}/${file}_1-fp.fq.gz ${processed_data}/${file}_2-fp.fq.gz  -t ${thread} -e norrna  -o ${processed_data}/${file}.clean_{1,2}.fq.gz 
+			rm ${processed_data}/${file}_1-fp.fq.gz ${processed_data}/${file}_2-fp.fq.gz
+			rm $(pwd)/fastp.html $(pwd)/fastp.json
 		fi
 		echo "----Finished quality control for $file----"
 ### assemble ###		
@@ -184,82 +184,82 @@ if [ $preprocess == true ];then
 		echo "----Starting assembly of the raw reads for $file----"
 		if [ $assemble_method == spades ]; then
 			if [ $datatype -eq 1 ]; then 
-				 spades.py --meta --phred-offset 33 -s "$file".clean.fq.gz -t ${thread} -o "$file".assemble 
+				 spades.py --meta --phred-offset 33 -s ${file}.clean.fq.gz -t ${thread} -o ${file}.assemble 
 			fi
 			if [ $datatype -eq 2 ]; then 
-				 spades.py --meta --phred-offset 33 -1 "$file".clean_1.fq.gz -2 "$file".clean_2.fq.gz -t ${thread} -o "$file".assemble 
+				 spades.py --meta --phred-offset 33 -1 ${file}.clean_1.fq.gz -2 ${file}.clean_2.fq.gz -t ${thread} -o ${file}.assemble 
 			fi
-			cat "$file".assemble/contigs.fasta | sed 's/ /_/g' | sed 's/=/_/g'| sed "s/>/>"$file"_/g" > "$file".assemble/"$file".fa_modify
+			cat ${file}.assemble/contigs.fasta | sed 's/ /_/g' | sed 's/=/_/g'| sed "s/>/>${file}_/g" > ${file}.assemble/${file}.fa_modify
 			fi	
-		if [ $assemble_method == megahit ] || [ ! -s "$file".assemble/contigs.fasta ]; then rm  -rf "$file".assemble;
+		if [ $assemble_method == megahit ] || [ ! -s ${file}.assemble/contigs.fasta ]; then rm  -rf ${file}.assemble;
 			if [ $datatype -eq 2 ]; then 
-				 megahit -1 "$file".clean_1.fq.gz  -2 "$file".clean_2.fq.gz  --num-cpu-threads ${thread}  --memory 0.9  -o "$file".assemble 
+				 megahit -1 ${file}.clean_1.fq.gz  -2 ${file}.clean_2.fq.gz  --num-cpu-threads ${thread}  --memory 0.9  -o ${file}.assemble 
 			fi
 			if [ $datatype -eq 1 ]; then 
-				 megahit -r "$file".clean.fq.gz --num-cpu-threads ${thread} --memory 0.9 -o "$file".assemble 
+				 megahit -r ${file}.clean.fq.gz --num-cpu-threads ${thread} --memory 0.9 -o ${file}.assemble 
 			fi
-			cat "$file".assemble/final.contigs.fa | sed 's/ /_/g' | sed 's/=/_/g'| sed "s/>/>"$file"_/g" > "$file".assemble/"$file".fa_modify 
+			cat ${file}.assemble/final.contigs.fa | sed 's/ /_/g' | sed 's/=/_/g'| sed "s/>/>${file}_/g" > ${file}.assemble/${file}.fa_modify 
 		fi
-		cp "$file".assemble/"$file".fa_modify "$file".megahit.fa
+		cp ${file}.assemble/${file}.fa_modify ${file}.megahit.fa
 		echo "----Finished assembly of the raw reads for $file----"
 ### Finding rna virus RdRP ###
         echo "----Starting RNA virus RdRP finding for $file----"
 	    diamond blastx \
-			   -q "$file".megahit.fa \
+			   -q ${file}.megahit.fa \
 			   -d ${nr_loc} \
-			   -o "$file"_assemble_nr \
+			   -o ${file}_assemble_nr \
 			   -e 1E-4 \
 			   -k 1 \
 			   -p ${thread} \
 			   -f 6 qseqid qlen sseqid stitle pident length evalue sstart send  
 
        cp -rf  ${present_loc}/data/sqlite_table ${processed_data} 
-       cp "$file"_assemble_nr "$file"_megahit_assemble_nr
-       sed -i "s/#/_/" "$file"_megahit_assemble_nr
-       cat "$file"_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > "$file"_accession_list.txt.nr
-       grep -F -f "$file"_accession_list.txt.nr $taxidDB_loc > "$file".taxid_table.txt.nr
-       cat  "$file".taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > "$file".taxid_list.txt.nr
-       python3 ${present_loc}/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < "$file".taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > "$file".lineage_table.txt.nr
-       cat sqlite_table/sqlite_template.nr | sed "s/template/""$file""/g" > sqlite_"$file".nr
-       sqlite3 sqlite_"$file".nr.summary.sql < sqlite_"$file".nr
-       mv "$file"_megahit_assemble_nr.edited "$file"_megahit_assemble_nr.edited.tsv
+       cp ${file}_assemble_nr ${file}_megahit_assemble_nr
+       sed -i "s/#/_/" ${file}_megahit_assemble_nr
+       cat ${file}_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > ${file}_accession_list.txt.nr
+       grep -F -f ${file}_accession_list.txt.nr $taxidDB_loc > ${file}.taxid_table.txt.nr
+       cat  ${file}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${file}.taxid_list.txt.nr
+       python3 ${present_loc}/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${file}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${file}.lineage_table.txt.nr
+       cat sqlite_table/sqlite_template.nr | sed "s/template/"${file}"/g" > sqlite_${file}.nr
+       sqlite3 sqlite_${file}.nr.summary.sql < sqlite_${file}.nr
+       mv ${file}_megahit_assemble_nr.edited ${file}_megahit_assemble_nr.edited.tsv
        rm -rf sqlite_table
-       rm -rf "$file".taxid_table.txt.nr "$file".taxid_list.txt.nr "$file".lineage_table.txt.nr "$file".accession_list.txt.nr
-       rm -rf sqlite_"$file".nr
-       rm -rf sqlite_"$file".nr.summary.sql
+       rm -rf ${file}.taxid_table.txt.nr ${file}.taxid_list.txt.nr ${file}.lineage_table.txt.nr ${file}.accession_list.txt.nr
+       rm -rf sqlite_${file}.nr
+       rm -rf sqlite_${file}.nr.summary.sql
 
-	   grep -i "virus" "$file"_megahit_assemble_nr.edited.tsv > "$file"_assemble_nr.virus
-	   cat "$file"_assemble_nr.virus | cut -f2 | sort -u > "$file"_assemble_nr.virus.list
-	   seqtk subseq "$file".megahit.fa "$file"_assemble_nr.virus.list > "$file"_assemble_nr.virus.match
+	   grep -i "virus" ${file}_megahit_assemble_nr.edited.tsv > ${file}_assemble_nr.virus
+	   cat ${file}_assemble_nr.virus | cut -f2 | sort -u > ${file}_assemble_nr.virus.list
+	   seqtk subseq ${file}.megahit.fa ${file}_assemble_nr.virus.list > ${file}_assemble_nr.virus.match
 	   diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db RdRP_only -p ${thread}
 	   diamond  blastx \
 		     --more-sensitive \
-			 -q "$file"_assemble_nr.virus.match \
+			 -q ${file}_assemble_nr.virus.match \
 			 -d RdRP_only \
-			 -o "$file"_assemble_nr.rdrp \
+			 -o ${file}_assemble_nr.rdrp \
 			 -e 1E-3 \
 			 -k 1 \
              -p ${thread} \
              -f 6 qseqid qlen sseqid stitle pident length evalue qstart qend
-	   cat "$file"_assemble_nr.rdrp | cut -f1 | sort -u > "$file"_assemble_nr.rdrp.list
-	   seqtk subseq "$file"_assemble_nr.virus.match "$file"_assemble_nr.rdrp.list > "$file".rdrp.virus.match
+	   cat ${file}_assemble_nr.rdrp | cut -f1 | sort -u > ${file}_assemble_nr.rdrp.list
+	   seqtk subseq ${file}_assemble_nr.virus.match ${file}_assemble_nr.rdrp.list > ${file}.rdrp.virus.match
 	   cd ${present_loc}
-	   Rscript ${present_loc}/src/R/blastn_nt_novirus.R --db ${nt_noViruses_loc} --evalue 1E-10 --input ${processed_data}/"$file".rdrp.virus.match --out_fasta ${processed_data}/"$file".rdrp.virus.match.modify --out_tsv ${processed_data}/"$file".blastn.tsv --threads ${thread}
+	   Rscript ${present_loc}/src/R/blastn_nt_novirus.R --db ${nt_noViruses_loc} --evalue 1E-10 --input ${processed_data}/${file}.rdrp.virus.match --out_fasta ${processed_data}/${file}.rdrp.virus.match.modify --out_tsv ${processed_data}/${file}.blastn.tsv --threads ${thread}
 	   cd ${processed_data}	
 	   diamond  blastx \
                 --more-sensitive \
-                -q "$file".rdrp.virus.match.modify \
+                -q ${file}.rdrp.virus.match.modify \
                 -d  RdRP_only \
-                -o "$file".megahit.fa.rdrp \
+                -o ${file}.megahit.fa.rdrp \
                 -e 1E-3 \
                 -k 1 \
                 -p ${thread} \
                 -f 6 qseqid qlen sseqid stitle pident length evalue sstart send
-        cat "$file".megahit.fa.rdrp | cut -f1 | sort -u > "$file"_assemble_nr.rdrp.list
-        seqtk subseq "$file".rdrp.virus.match.modify "$file"_assemble_nr.rdrp.list > "$file".megahit.fa.rdrp.fasta
-	    mv "$file"_assemble_nr "$file".megahit.fa.nr
-	    rm -rf "$file".assemble "$file"_assemble_nr.rdrp.list 
-	    rm -rf "$file"_accession_list.txt.nr "$file"_megahit_assemble_nr "$file"_assemble_nr.rdrp.list "$file"_assemble_nr.virus.list
+        cat ${file}.megahit.fa.rdrp | cut -f1 | sort -u > ${file}_assemble_nr.rdrp.list
+        seqtk subseq ${file}.rdrp.virus.match.modify ${file}_assemble_nr.rdrp.list > ${file}.megahit.fa.rdrp.fasta
+	    mv ${file}_assemble_nr ${file}.megahit.fa.nr
+	    rm -rf ${file}.assemble ${file}_assemble_nr.rdrp.list 
+	    rm -rf ${file}_accession_list.txt.nr ${file}_megahit_assemble_nr ${file}_assemble_nr.rdrp.list ${file}_assemble_nr.virus.list
         cd ${present_loc}
 		echo "----Finished RNA virus RdRP finding for $file----"
   done
@@ -274,13 +274,13 @@ if [ $only_rdrp_find -eq 0 ];then
 #		mkdir -p ${rdrp}/total.rdrp.megahit.fa_contigs
 #		for file in "${result_files[@]}";
 #		do
-#		if [ $datatype -eq 1 ]; then perl bin/align_and_estimate_abundance.pl --transcripts ${rdrp}/total.rdrp.virus --seqType fq --single ${processed_data}/"$file".clean.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir ${rdrp}/"$file"_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
-#		if [ $datatype -eq 2 ]; then perl bin/align_and_estimate_abundance.pl --transcripts ${rdrp}/total.rdrp.virus --seqType fq --left ${processed_data}/"$file".clean_1.fq.gz --right ${processed_data}/"$file".clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir ${rdrp}/"$file"_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
+#		if [ $datatype -eq 1 ]; then perl bin/align_and_estimate_abundance.pl --transcripts ${rdrp}/total.rdrp.virus --seqType fq --single ${processed_data}/${file}.clean.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir ${rdrp}/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
+#		if [ $datatype -eq 2 ]; then perl bin/align_and_estimate_abundance.pl --transcripts ${rdrp}/total.rdrp.virus --seqType fq --left ${processed_data}/${file}.clean_1.fq.gz --right ${processed_data}/${file}.clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir ${rdrp}/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
 #
-#		if [ $quantify_method == RSEM ]; then mv ${rdrp}/"$file"_RSEM-gai-total/RSEM.genes.results ${rdrp}/"$file"_RSEM-gai-total/"$file"_RSEM.genes.results; fi
-#		if [ $quantify_method == salmon ]; then mv ${rdrp}/"$file"_RSEM-gai-total/quant.sf ${rdrp}/"$file"_RSEM-gai-total/"$file"_RSEM.genes.results; fi
+#		if [ $quantify_method == RSEM ]; then mv ${rdrp}/${file}_RSEM-gai-total/RSEM.genes.results ${rdrp}/${file}_RSEM-gai-total/${file}_RSEM.genes.results; fi
+#		if [ $quantify_method == salmon ]; then mv ${rdrp}/${file}_RSEM-gai-total/quant.sf ${rdrp}/${file}_RSEM-gai-total/${file}_RSEM.genes.results; fi
 #
-#		cp ${rdrp}/"$file"_RSEM-gai-total/"$file"_RSEM.genes.results ${rdrp}/total.rdrp.megahit.fa_contigs
+#		cp ${rdrp}/${file}_RSEM-gai-total/${file}_RSEM.genes.results ${rdrp}/total.rdrp.megahit.fa_contigs
 #		done;
 #	
 #		Rscript src/R/TPM-combine.R ${rdrp}
@@ -406,15 +406,15 @@ if [ $only_rdrp_find -eq 0 ];then
 		mkdir -p $megahit/total.nr.rdrp.megahit.fa_contigs
 		for file in "${result_files[@]}";
 		do
-		if [ $datatype -eq 1 ]; then perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --single $processed_data/"$file".clean.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/"$file"_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
-		if [ $datatype -eq 2 ]; then perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --left $processed_data/"$file".clean_1.fq.gz --right $processed_data/"$file".clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/"$file"_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
+		if [ $datatype -eq 1 ]; then perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --single $processed_data/${file}.clean.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
+		if [ $datatype -eq 2 ]; then perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --left $processed_data/${file}.clean_1.fq.gz --right $processed_data/${file}.clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
 
-		if [ $quantify_method == RSEM ]; then mv $megahit/"$file"_RSEM-gai-total/RSEM.genes.results $megahit/"$file"_RSEM-gai-total/"$file"_RSEM.genes.results; fi
-		if [ $quantify_method == salmon ]; then mv $megahit/"$file"_RSEM-gai-total/quant.sf $megahit/"$file"_RSEM-gai-total/"$file"_RSEM.genes.results; fi
-		cp $megahit/"$file"_RSEM-gai-total/"$file"_RSEM.genes.results $megahit/total.nr.rdrp.megahit.fa_contigs
+		if [ $quantify_method == RSEM ]; then mv $megahit/${file}_RSEM-gai-total/RSEM.genes.results $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results; fi
+		if [ $quantify_method == salmon ]; then mv $megahit/${file}_RSEM-gai-total/quant.sf $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results; fi
+		cp $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results $megahit/total.nr.rdrp.megahit.fa_contigs
 		done;
 
-		for file in $megahit/total.nr.rdrp.megahit.fa_contigs/*.results; do mv "$file" "${file%.results}.result.tsv"; done
+		for file in $megahit/total.nr.rdrp.megahit.fa_contigs/*.results; do mv ${file} "${file%.results}.result.tsv"; done
 
 		### coefficient-matrix
 		cp  $nr/${library_ID}_megahit_assemble_nr.edited.tsv $megahit
