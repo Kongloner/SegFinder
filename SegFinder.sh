@@ -11,7 +11,7 @@
     echo "Running command: $@"
     if ! "$@" 2>&1; then
         echo "Error running command: $@" 1>&2
-         error_exit "Failed to run command: $@"
+        error_exit "Failed to run command: $@"
     fi
  }
 
@@ -91,13 +91,13 @@ done
 # Function to validate input parameters
 validate_params() {
 	# Validate stage parameter
-	valid_stages=("preprocess" "rdrp_find" "virus_find")
+	valid_stages=("preprocess" "rdrp_find" "segment_find")
 	if [[ -z $stage || ! " ${valid_stages[@]} " =~ " ${stage} " ]]; then
     	echo "Invalid or missing stage parameter. Please use --stage with one of the following values: preprocess, rdrp_find, segment_find."
     	exit 1
 	fi
 
-    if [[ -z $rawData_loc ]]; then
+    if [[ -z $rawData_loc && $stage == "preprocess" ]]; then
         echo "please input the location of the raw data!!! --indata"
         exit 1
     fi
@@ -155,10 +155,10 @@ processed_data="$out_loc/processed_data"
 present_loc=`pwd`
 chmod +x ${present_loc}/bin/align_and_estimate_abundance.pl
 chmod +x ${present_loc}/bin/ORFfinder
-result_files=($(ls $rawData_loc/*.fq.gz | sed -E 's/_1.fq.gz|_2.fq.gz|.fq.gz//g' | xargs -n 1 basename | sort -u))
 
 #### data preprocessing ####
 if [ $stage == "preprocess" ]; then
+	result_files=($(ls $rawData_loc/*.fq.gz | sed -E 's/_1.fq.gz|_2.fq.gz|.fq.gz//g' | xargs -n 1 basename | sort -u))
     mkdir -p "$processed_data"
 	for file in "${result_files[@]}";
 	do
@@ -212,6 +212,7 @@ fi
 ### Finding rna virus RdRP ###
 if [ $stage == "rdrp_find" ]; then
 ########################part3 finding rdrp###########################
+	result_files=($(ls $processed_data/*.megahit.fa | sed -E 's/.megahit.fa//g' | xargs -n 1 basename | sort -u))
 	for file in "${result_files[@]}";
 	do
         echo "----Starting RNA virus RdRP finding for $file----"
@@ -419,8 +420,8 @@ if [ $stage == "segment_find" ]; then
 		mkdir -p $megahit/total.nr.rdrp.megahit.fa_contigs
 		for file in "${result_files[@]}";
 		do
-		if [ $datatype -eq 1 ]; then  perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --single $processed_data/${file}.clean.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
-		if [ $datatype -eq 2 ]; then  perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --left $processed_data/${file}.clean_1.fq.gz --right $processed_data/${file}.clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
+		if [ $datatype -eq 1 ]; then run_command perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --single $processed_data/${file}.clean.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
+		if [ $datatype -eq 2 ]; then run_command perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --left $processed_data/${file}.clean_1.fq.gz --right $processed_data/${file}.clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
 
 		if [ $quantify_method == RSEM ]; then mv $megahit/${file}_RSEM-gai-total/RSEM.genes.results $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results; fi
 		if [ $quantify_method == salmon ]; then mv $megahit/${file}_RSEM-gai-total/quant.sf $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results; fi
