@@ -122,7 +122,7 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 ./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
                --nt_noViruses Seg_DB/NT/nt_noViruses \
                --nt Seg_DB/NT/nt  \
-               --nr /shilab6/home/public/database/nr/nr \
+               --nr Seg_DB/NR/nr \
                --thread 20 \
                --datatype 2 \
                --stage rdrp_find
