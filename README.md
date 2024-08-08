@@ -130,7 +130,6 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 
 #### Step 3: segmented RNA virus finder        
 ```shell
-./SegFinder.sh --taxidDB /shilab6/home/public/database/others/prot.accession2taxid  --nt_noViruses SegDB/nt_noViruses/nt_noViruses --nt /shilab6/home/public/database/nt/nt --thread 200 --datatype 2 --method salmon --stage segment_find -—library_ID SRR7102799
 ./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
                --nt_noViruses Seg_DB/NT/nt_noViruses \
                --nt Seg_DB/NT/nt  \
