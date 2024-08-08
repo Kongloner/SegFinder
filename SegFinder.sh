@@ -309,7 +309,7 @@ if [ $stage == "segment_find" ]; then
 #		rm -rf library_ID
 #		# screnn repetitive and similar contigs
 #	fi
-
+	result_files=($(ls $processed_data/*.megahit.fa | sed -E 's/.megahit.fa//g' | xargs -n 1 basename | sort -u))
 	library_IDs=($library_ID)
 
 	for library_ID in "${library_IDs[@]}";
