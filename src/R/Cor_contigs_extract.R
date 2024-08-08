@@ -10,11 +10,11 @@ cat("... done ! \n")
 
 #### Abundance correlation clustering result filtering ####
 args <- commandArgs(T)
-args[1] <- 0.79  # cor
-args[2] <- 'SRR7102799'
-args[3] <- 0   # TPM
-args[4] <- 100  # rdrp_multi
-args[5] <- 20  # non_rdrp_multi
+# args[1] <- 0.79  # cor
+# args[2] <- 'SRR7102799'
+# args[3] <- 0   # TPM
+# args[4] <- 100  # rdrp_multi
+# args[5] <- 20  # non_rdrp_multi
 
 if (length(args) == 3) {
   args[4] <- 100  # rdrp_multi
