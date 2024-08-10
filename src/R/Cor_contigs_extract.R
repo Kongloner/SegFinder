@@ -69,66 +69,66 @@ if(length(index) > 1){
   seq_length <- seq_length[which(seq_length$V1 %in% rownames(confidence)),]
   seq_length <- seq_length[!duplicated(seq_length$V1),]
   # all(seq_length$V1 == rownames(confidence))
-  confidence[['real_length']] <- seq_length$V2
+  confidence[['Contig_length']] <- seq_length$V2
   confidence[['cutted']] <- seq_length$V3
   
   
-  ### add RdRp(yes/no)
-  RdRp_blastx <- fread(paste0(args[2],".megahit.fa.rdrp.tsv"),sep = '\t',header = F,data.table = FALSE)
-  RdRp_blastx <- RdRp_blastx[which(RdRp_blastx$V1 %in% rownames(confidence)),]
-  RdRp_blastx <- RdRp_blastx[!duplicated(RdRp_blastx$V1),]
-  confidence[['RdRp(yes/no)']] <- 'no'
-  confidence[RdRp_blastx$V1,]$`RdRp(yes/no)` <- 'yes'
+  ### add RdRP
+  RdRP_blastx_hits <- fread(paste0(args[2],".megahit.fa.rdrp.tsv"),sep = '\t',header = F,data.table = FALSE)
+  RdRP_blastx_hits <- RdRP_blastx_hits[which(RdRP_blastx_hits$V1 %in% rownames(confidence)),]
+  RdRP_blastx_hits <- RdRP_blastx_hits[!duplicated(RdRP_blastx_hits$V1),]
+  confidence[['RdRP']] <- 'no'
+  confidence[RdRP_blastx_hits$V1,]$`RdRP` <- 'yes'
   
-  ### add RdRp_blastx
-  RdRp_contig_Ordered <- rownames(confidence)[which(confidence$`RdRp(yes/no)` == 'yes')]
-  RdRp_blastx$V1 <- factor(RdRp_blastx$V1,levels = RdRp_contig_Ordered)
-  RdRp_blastx <- RdRp_blastx[order(RdRp_blastx$V1),]
-  # all(RdRp_blastx$V1 == RdRp_contig_Ordered)
+  ### add RdRP_blastx_hits
+  RdRp_contig_Ordered <- rownames(confidence)[which(confidence$`RdRP` == 'yes')]
+  RdRP_blastx_hits$V1 <- factor(RdRP_blastx_hits$V1,levels = RdRp_contig_Ordered)
+  RdRP_blastx_hits <- RdRP_blastx_hits[order(RdRP_blastx_hits$V1),]
+  # all(RdRP_blastx_hits$V1 == RdRp_contig_Ordered)
   
-  confidence$RdRp_blastx <- ''
-  confidence[RdRp_contig_Ordered,]$RdRp_blastx <- RdRp_blastx$V3
-  confidence$RdRp_identity <- ''
-  confidence[RdRp_contig_Ordered,]$RdRp_identity <- RdRp_blastx$V5
+  confidence$RdRP_blastx_hits <- ''
+  confidence[RdRp_contig_Ordered,]$RdRP_blastx_hits <- RdRP_blastx_hits$V3
+  confidence$RdRP_identity <- ''
+  confidence[RdRp_contig_Ordered,]$RdRP_identity <- RdRP_blastx_hits$V5
   
-  ### add NR_blastx
-  # NR_blastx <- read.table(paste0(args[2],"_megahit_assemble_nr.tsv"),header = F,sep = "\t",quote = '')
-  NR_blastx <- fread(paste0(args[2],"_megahit_assemble_nr.tsv"),sep = '\t',header = F,data.table = FALSE)
-  NR_blastx$V4 <- apply(NR_blastx,1,function(x,c1,c2){ gsub(paste0(x[c1],' '),'',x[c2],fixed = TRUE) },"V3",'V4')
-  NR_blastx <- NR_blastx[which(NR_blastx$V1 %in% rownames(confidence)),]
-  NR_blastx <- NR_blastx[!duplicated(NR_blastx$V1),]
+  ### add nr_blastx_hits
+  # nr_blastx_hits <- read.table(paste0(args[2],"_megahit_assemble_nr.tsv"),header = F,sep = "\t",quote = '')
+  nr_blastx_hits <- fread(paste0(args[2],"_megahit_assemble_nr.tsv"),sep = '\t',header = F,data.table = FALSE)
+  nr_blastx_hits$V4 <- apply(nr_blastx_hits,1,function(x,c1,c2){ gsub(paste0(x[c1],' '),'',x[c2],fixed = TRUE) },"V3",'V4')
+  nr_blastx_hits <- nr_blastx_hits[which(nr_blastx_hits$V1 %in% rownames(confidence)),]
+  nr_blastx_hits <- nr_blastx_hits[!duplicated(nr_blastx_hits$V1),]
   
-  NR_contig_Ordered <- rownames(confidence)[which(rownames(confidence) %in% NR_blastx$V1)]
-  NR_blastx$V1 <- factor(NR_blastx$V1,levels = NR_contig_Ordered)
-  NR_blastx <- NR_blastx[order(NR_blastx$V1),]
-  confidence$NR_blastx <- ''
-  confidence[NR_contig_Ordered,]$NR_blastx <- NR_blastx$V4
-  confidence$NR_identity <- ''
-  confidence[NR_contig_Ordered,]$NR_identity <- NR_blastx$V5
+  NR_contig_Ordered <- rownames(confidence)[which(rownames(confidence) %in% nr_blastx_hits$V1)]
+  nr_blastx_hits$V1 <- factor(nr_blastx_hits$V1,levels = NR_contig_Ordered)
+  nr_blastx_hits <- nr_blastx_hits[order(nr_blastx_hits$V1),]
+  confidence$nr_blastx_hits <- ''
+  confidence[NR_contig_Ordered,]$nr_blastx_hits <- nr_blastx_hits$V4
+  confidence$nr_identity <- ''
+  confidence[NR_contig_Ordered,]$nr_identity <- nr_blastx_hits$V5
   confidence$NR_sstart <- ''
-  confidence[NR_contig_Ordered,]$NR_sstart <- NR_blastx[,ncol(NR_blastx)-1]
+  confidence[NR_contig_Ordered,]$NR_sstart <- nr_blastx_hits[,ncol(nr_blastx_hits)-1]
   confidence$NR_send <- ''
-  confidence[NR_contig_Ordered,]$NR_send <- NR_blastx[,ncol(NR_blastx)]
+  confidence[NR_contig_Ordered,]$NR_send <- nr_blastx_hits[,ncol(nr_blastx_hits)]
   
   
-  ### add nt_blast
-  # NT_blast <- read.table(paste0(args[2],"_megahit_assemble_re_nt.tsv"),header = F,sep = "\t",quote = "")
-  NT_blast <- fread(paste0(args[2],"_megahit_assemble_re_nt.tsv"),sep = '\t',header = F,data.table = FALSE)
-  # NT_blastx$V4 <- apply(NT_blastx,1,function(x,c1,c2){ gsub(paste0(x[c1],' '),'',x[c2]) },"V3",'V4')
-  NT_blast <- NT_blast[which(NT_blast$V1 %in% rownames(confidence)),]
-  NT_blast <- NT_blast[!duplicated(NT_blast$V1),]
+  ### add nt_blast_hits
+  # nt_blast_hits <- read.table(paste0(args[2],"_megahit_assemble_re_nt.tsv"),header = F,sep = "\t",quote = "")
+  nt_blast_hits <- fread(paste0(args[2],"_megahit_assemble_re_nt.tsv"),sep = '\t',header = F,data.table = FALSE)
+  # nt_blast_hitsx$V4 <- apply(nt_blast_hitsx,1,function(x,c1,c2){ gsub(paste0(x[c1],' '),'',x[c2]) },"V3",'V4')
+  nt_blast_hits <- nt_blast_hits[which(nt_blast_hits$V1 %in% rownames(confidence)),]
+  nt_blast_hits <- nt_blast_hits[!duplicated(nt_blast_hits$V1),]
   
-  NT_contig_Ordered <- rownames(confidence)[which(rownames(confidence) %in% NT_blast$V1)]
-  NT_blast$V1 <- factor(NT_blast$V1,levels = NT_contig_Ordered)
-  NT_blast <- NT_blast[order(NT_blast$V1),]
-  confidence$NT_blast <- ''
-  confidence[NT_contig_Ordered,]$NT_blast <- NT_blast$V4
-  confidence$NT_identity <- ''
-  confidence[NT_contig_Ordered,]$NT_identity <- NT_blast$V5
+  NT_contig_Ordered <- rownames(confidence)[which(rownames(confidence) %in% nt_blast_hits$V1)]
+  nt_blast_hits$V1 <- factor(nt_blast_hits$V1,levels = NT_contig_Ordered)
+  nt_blast_hits <- nt_blast_hits[order(nt_blast_hits$V1),]
+  confidence$nt_blast_hits <- ''
+  confidence[NT_contig_Ordered,]$nt_blast_hits <- nt_blast_hits$V4
+  confidence$nt_identity <- ''
+  confidence[NT_contig_Ordered,]$nt_identity <- nt_blast_hits$V5
   confidence$NT_sstart <- ''
-  confidence[NT_contig_Ordered,]$NT_sstart <- NT_blast[,ncol(NT_blast)-1]
+  confidence[NT_contig_Ordered,]$NT_sstart <- nt_blast_hits[,ncol(nt_blast_hits)-1]
   confidence$NT_send <- ''
-  confidence[NT_contig_Ordered,]$NT_send <- NT_blast[,ncol(NT_blast)]
+  confidence[NT_contig_Ordered,]$NT_send <- nt_blast_hits[,ncol(nt_blast_hits)]
   
   
   ### add TPM
@@ -207,41 +207,41 @@ if(length(index) > 1){
   for(i in 1:length(label)){
     cluster.label <- gsub(paste0("^",label[i],"$"), paste0('cluster_',i), cluster.label)
   }
-  confidence$cluster <- cluster.label
-  confidence <- confidence[order(confidence$cluster),]
+  confidence$Cluster <- cluster.label
+  confidence <- confidence[order(confidence$Cluster),]
   
   
   # # remove the cluster with only 1 contig
-  # clusters_contigs_num <-  aggregate(confidence$cluster,by = list(cluster = confidence$cluster),length)
-  # retain_contigs <- clusters_contigs_num[which(clusters_contigs_num$x > 1),]$cluster
-  # confidence <- confidence[which(confidence$cluster %in% retain_contigs),]
+  # clusters_contigs_num <-  aggregate(confidence$Cluster,by = list(cluster = confidence$Cluster),length)
+  # retain_contigs <- clusters_contigs_num[which(clusters_contigs_num$x > 1),]$Cluster
+  # confidence <- confidence[which(confidence$Cluster %in% retain_contigs),]
   
   
-  confidence1 <- confidence[confidence$`RdRp(yes/no)` == 'yes',]
-  confidence1$`RdRp(yes/no)` <- paste0(confidence1$`RdRp(yes/no)`,'_',confidence1$cluster)
-  confidence1 <- confidence1[!duplicated(confidence1$`RdRp(yes/no)`),]
-  cor <- fread('cor.r.1.csv',header = F,data.table = FALSE)
-  cor[1,1] <- 'contig'
-  colnames(cor) <- cor[1,]
-  cor <- cor[-1,]
-  rownames(cor) <- cor[,1]
-  cor <- cor[-1]
+  confidence1 <- confidence[confidence$`RdRP` == 'yes',]
+  confidence1$`RdRP` <- paste0(confidence1$`RdRP`,'_',confidence1$Cluster)
+  confidence1 <- confidence1[!duplicated(confidence1$`RdRP`),]
+  Correlation <- fread('cor.r.1.csv',header = F,data.table = FALSE)
+  Correlation[1,1] <- 'contig'
+  colnames(Correlation) <- Correlation[1,]
+  Correlation <- Correlation[-1,]
+  rownames(Correlation) <- Correlation[,1]
+  Correlation <- Correlation[-1]
   
-  confidence$cor <- ''
-  confidence[rownames(confidence1),]$cor <- '*'
+  confidence$Correlation <- ''
+  confidence[rownames(confidence1),]$Correlation <- '*'
   
   for (i in seq_len(nrow(confidence1))) {
-    idx <- which(confidence$cluster == confidence1$cluster[i] & !rownames(confidence) %in% rownames(confidence1)[i])
-    confidence[idx, 'cor'] <- unlist(cor[rownames(confidence1)[i], rownames(confidence[idx,])])
+    idx <- which(confidence$Cluster == confidence1$Cluster[i] & !rownames(confidence) %in% rownames(confidence1)[i])
+    confidence[idx, 'Correlation'] <- unlist(Correlation[rownames(confidence1)[i], rownames(confidence[idx,])])
   }
   
   ### search clusters without RdRp
-  confidence1 <- confidence[which(confidence$`RdRp(yes/no)` == 'yes'),]
-  rdrp_cluster <- unique(confidence1$cluster)
-  to_remove_clusters <- setdiff(unique(confidence$cluster),rdrp_cluster)
+  confidence1 <- confidence[which(confidence$`RdRP` == 'yes'),]
+  rdrp_cluster <- unique(confidence1$Cluster)
+  to_remove_clusters <- setdiff(unique(confidence$Cluster),rdrp_cluster)
   if(length(to_remove_clusters) > 0)
   {
-    confidence <- confidence[-which(confidence$cluster %in% to_remove_clusters),]
+    confidence <- confidence[-which(confidence$Cluster %in% to_remove_clusters),]
   }else{
     confidence <- confidence
   }
@@ -250,20 +250,20 @@ if(length(index) > 1){
   
   if(nrow(confidence) > 0)
   {
-    ### search clusters with more than 1 non_virus(NR_identity > 30%)
+    ### search clusters with more than 1 non_virus(nr_identity > 30%)
     confidence1 <- confidence
     virus_to_remove <- 'Virus|virus|Viruses|viruses|Phage|phage|Riboviria'
-    confidence_to_removeCluster <- confidence1[confidence1$NR_blastx != '',]
-    confidence_to_removeCluster$NR_identity <- as.numeric(confidence_to_removeCluster$NR_identity)
-    confidence_to_removeCluster <- confidence_to_removeCluster[confidence_to_removeCluster$NR_identity > 30,]
+    confidence_to_removeCluster <- confidence1[confidence1$nr_blastx_hits != '',]
+    confidence_to_removeCluster$nr_identity <- as.numeric(confidence_to_removeCluster$nr_identity)
+    confidence_to_removeCluster <- confidence_to_removeCluster[confidence_to_removeCluster$nr_identity > 30,]
     if(nrow(confidence_to_removeCluster) > 0){
-      confidence_to_removeCluster <- confidence_to_removeCluster[!grepl(virus_to_remove,confidence_to_removeCluster$NR_blastx),]
+      confidence_to_removeCluster <- confidence_to_removeCluster[!grepl(virus_to_remove,confidence_to_removeCluster$nr_blastx_hits),]
       if(nrow(confidence_to_removeCluster) > 0){
-        confidence_to_removeCluster <- aggregate(confidence_to_removeCluster$cluster,by = list(cluster = confidence_to_removeCluster$cluster),length)
+        confidence_to_removeCluster <- aggregate(confidence_to_removeCluster$Cluster,by = list(cluster = confidence_to_removeCluster$Cluster),length)
         confidence_to_removeCluster <- confidence_to_removeCluster[which(confidence_to_removeCluster$x >= 1),]
-        to_remove_clusters <- confidence_to_removeCluster$cluster
+        to_remove_clusters <- confidence_to_removeCluster$Cluster
         if(length(to_remove_clusters) > 0){
-          confidence <- confidence[-which(confidence$cluster %in% to_remove_clusters),]
+          confidence <- confidence[-which(confidence$Cluster %in% to_remove_clusters),]
         }
       }
     }
@@ -272,20 +272,20 @@ if(length(index) > 1){
   confidence1 <- confidence
   if(nrow(confidence1) > 0){
     ### ### search clusters with  more than 2 different RdRps
-    confidence1 <- confidence1[which(confidence1$`RdRp(yes/no)` == 'yes'),]
+    confidence1 <- confidence1[which(confidence1$`RdRP` == 'yes'),]
     if(nrow(confidence1) > 0){
-      confidence1$NR_blastx <- paste0(confidence1$NR_blastx,'_',confidence1$NR_identity)
-      cluster_RdRp_num <- aggregate(confidence1$cluster,by = list(cluster = confidence1$cluster),length)
+      confidence1$nr_blastx_hits <- paste0(confidence1$nr_blastx_hits,'_',confidence1$nr_identity)
+      cluster_RdRp_num <- aggregate(confidence1$Cluster,by = list(cluster = confidence1$Cluster),length)
       cluster_RdRp_num <- cluster_RdRp_num[which(cluster_RdRp_num$x > 1),] # choose cluster with more than 1 rdrp_contigs
       if(nrow(cluster_RdRp_num) > 0){
-        confidence1 <- confidence1[which(confidence1$cluster %in% cluster_RdRp_num$cluster),]
-        confidence1$NR_blastx <- paste0(confidence1$NR_blastx,'_',confidence1$cluster)
-        confidence1 <- confidence1[!duplicated(confidence1$NR_blastx),]
-        cluster <- aggregate(confidence1$cluster,by = list(cluster = confidence1$cluster),length)
+        confidence1 <- confidence1[which(confidence1$Cluster %in% cluster_RdRp_num$Cluster),]
+        confidence1$nr_blastx_hits <- paste0(confidence1$nr_blastx_hits,'_',confidence1$Cluster)
+        confidence1 <- confidence1[!duplicated(confidence1$nr_blastx_hits),]
+        cluster <- aggregate(confidence1$Cluster,by = list(cluster = confidence1$Cluster),length)
         cluster <- cluster[which(cluster$x > 1),]
         if(nrow(cluster) > 0){
-          to_remove_clusters <- cluster$cluster
-          confidence <- confidence[-which(confidence$cluster %in% to_remove_clusters),]
+          to_remove_clusters <- cluster$Cluster
+          confidence <- confidence[-which(confidence$Cluster %in% to_remove_clusters),]
         }
       }
     }
@@ -295,23 +295,23 @@ if(length(index) > 1){
     #### remove the cluster whose contigs  are all rdrps
     to_remove_clusters <- vector()
     confidence1 <- confidence
-    confidence1$`RdRp(yes/no)` <- paste0(confidence1$`RdRp(yes/no)`,'_',confidence1$cluster)
-    confidence1 <- confidence1[!duplicated(confidence1$`RdRp(yes/no)`),]
-    cluster <- aggregate(confidence1$cluster,by = list(cluster = confidence1$cluster),length)
+    confidence1$`RdRP` <- paste0(confidence1$`RdRP`,'_',confidence1$Cluster)
+    confidence1 <- confidence1[!duplicated(confidence1$`RdRP`),]
+    cluster <- aggregate(confidence1$Cluster,by = list(cluster = confidence1$Cluster),length)
     cluster <- cluster[which(cluster$x == 1),] # choose the cluster whose contigs are all rdrps(or no_rdrps)
     if(nrow(cluster) > 0){
-      confidence1 <- confidence[which(confidence$cluster %in% cluster$cluster),]
-      confidence1 <- confidence1[which(confidence1$`RdRp(yes/no)` == 'yes'),] # choose the cluster whose contigs are all rdrps
+      confidence1 <- confidence[which(confidence$Cluster %in% cluster$Cluster),]
+      confidence1 <- confidence1[which(confidence1$`RdRP` == 'yes'),] # choose the cluster whose contigs are all rdrps
       if(nrow(confidence1) > 0){
-        to_remove_clusters <- unique(confidence1$cluster)
-        confidence <- confidence[-which(confidence$cluster %in% to_remove_clusters),]
+        to_remove_clusters <- unique(confidence1$Cluster)
+        confidence <- confidence[-which(confidence$Cluster %in% to_remove_clusters),]
       }
     }
     
     if(nrow(confidence) > 0){
       ### remove the clusters which exists the contigs that they and their re_assemble contigs all meet the condition(multi < threshold value)
       contigs_name <- rownames(confidence)
-      rdrp <- which(confidence$`RdRp(yes/no)` == 'yes')
+      rdrp <- which(confidence$`RdRP` == 'yes')
       non_rdrp <- setdiff(1:length(contigs_name),rdrp)
       contigs_name <- as.numeric(gsub(".*(cov|multi)_([0-9.]+).*", "\\2", contigs_name))
       
@@ -319,31 +319,31 @@ if(length(index) > 1){
       contigs_name[rdrp] <- ifelse(contigs_name[rdrp] > as.numeric(args[4]),1,0)
       contigs_name[non_rdrp] <- ifelse(contigs_name[non_rdrp] > as.numeric(args[5]),1,0)
       multi_row <- which(contigs_name == 0)
-      to_remove_clusters <- unique(confidence[multi_row,]$cluster)
+      to_remove_clusters <- unique(confidence[multi_row,]$Cluster)
       if(length(to_remove_clusters) > 0)
       {
-        confidence <- confidence[-which(confidence$cluster %in% to_remove_clusters),]
+        confidence <- confidence[-which(confidence$Cluster %in% to_remove_clusters),]
       }
     }
   }
   
   if(nrow(confidence) > 0){
-    confidence1 <- confidence[confidence$`RdRp(yes/no)` == 'yes',]
-    confidence1$`RdRp(yes/no)` <- paste0(confidence1$`RdRp(yes/no)`,'_',confidence1$cluster)
-    confidence1 <- confidence1[!duplicated(confidence1$`RdRp(yes/no)`),]
-    cor <- fread('cor.r.1.csv',header = F,data.table = FALSE)
-    cor[1,1] <- 'contig'
-    colnames(cor) <- cor[1,]
-    cor <- cor[-1,]
-    rownames(cor) <- cor[,1]
-    cor <- cor[-1]
+    confidence1 <- confidence[confidence$`RdRP` == 'yes',]
+    confidence1$`RdRP` <- paste0(confidence1$`RdRP`,'_',confidence1$Cluster)
+    confidence1 <- confidence1[!duplicated(confidence1$`RdRP`),]
+    Correlation <- fread('cor.r.1.csv',header = F,data.table = FALSE)
+    Correlation[1,1] <- 'contig'
+    colnames(Correlation) <- Correlation[1,]
+    Correlation <- Correlation[-1,]
+    rownames(Correlation) <- Correlation[,1]
+    Correlation <- Correlation[-1]
     
-    confidence$cor <- ''
-    confidence[rownames(confidence1),]$cor <- '*'
+    confidence$Correlation <- ''
+    confidence[rownames(confidence1),]$Correlation <- '*'
     
     for (i in seq_len(nrow(confidence1))) {
-      idx <- which(confidence$cluster == confidence1$cluster[i] & !rownames(confidence) %in% rownames(confidence1)[i])
-      confidence[idx, 'cor'] <- unlist(cor[rownames(confidence1)[i], rownames(confidence[idx,])])
+      idx <- which(confidence$Cluster == confidence1$Cluster[i] & !rownames(confidence) %in% rownames(confidence1)[i])
+      confidence[idx, 'Correlation'] <- unlist(Correlation[rownames(confidence1)[i], rownames(confidence[idx,])])
     }
   }
   
@@ -353,8 +353,8 @@ if(length(index) > 1){
     confidence1$TPM <- as.numeric(confidence1$TPM)
     confidence1 <- confidence1[confidence1$TPM < as.numeric(args[3]),] 
     if(nrow(confidence1) > 0){
-      remove_clusters <- unique(confidence1$cluster)
-      confidence <- confidence[!confidence$cluster %in% remove_clusters,]
+      remove_clusters <- unique(confidence1$Cluster)
+      confidence <- confidence[!confidence$Cluster %in% remove_clusters,]
     }
   }
   
@@ -364,8 +364,8 @@ if(length(index) > 1){
     confidence1$Frequency <- as.numeric(confidence1$Frequency)
     confidence1 <- confidence1[confidence1$Frequency < 3,]
     if(nrow(confidence1) > 0){
-      remove_clusters <- unique(confidence1$cluster)
-      confidence <- confidence[!confidence$cluster %in% remove_clusters,]
+      remove_clusters <- unique(confidence1$Cluster)
+      confidence <- confidence[!confidence$Cluster %in% remove_clusters,]
     }
   }
   
