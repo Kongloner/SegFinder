@@ -107,7 +107,7 @@ gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 
 ```./SegFinder.sh --help``` for **help**
 
-Assuming all databases are stored in the SegDB folder in the current working directory. Of course, you can input the actual paths of these three databases (NR, NT, and non-viral NT) according to your specific situation; the paths provided here are just for example.
+Assuming all databases are stored in the SegDB folder in the current working directory. Of course, you can input the actual paths of these databases according to your specific situation; the paths provided here are just for example.
 #### Step 1: Raw reads Quality Control and Assembly  
 ```shell
 ./SegFinder.sh --indata testdata \
@@ -122,7 +122,7 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 ./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
                --nt_noViruses Seg_DB/NT/nt_noViruses \
                --nt Seg_DB/NT/nt  \
-               --nr /shilab6/home/public/database/nr/nr \
+               --nr Seg_DB/NR/nr \
                --thread 20 \
                --datatype 2 \
                --stage rdrp_find
