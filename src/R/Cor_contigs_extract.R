@@ -245,11 +245,12 @@ if(length(index) > 1){
   }else{
     confidence <- confidence
   }
-  colnames(confidence) <-   c('Frequency', 'Contig_length', 'cutted', 'RdRP',
+  confidence1 <- confidence
+  colnames(confidence1) <-   c('Frequency', 'Contig_length', 'cutted', 'RdRP',
                               'RdRP_blastx_hits', 'RdRP_identity', 'nr_blastx_hits', 'nr_identity', 'NR_sstart',
                               'NR_send', 'nt_blast_hits', 'nt_identity', 'NT_sstart', 'NT_send', 'TPM',
                               'Cluster', 'Correlation')
-  write.xlsx(confidence,file = paste0(args[2],'.pre.confidence_table.xlsx'),rowNames = T)
+  write.xlsx(confidence1,file = paste0(args[2],'.pre.confidence_table.xlsx'),rowNames = T)
   
   if(nrow(confidence) > 0)
   {
@@ -371,7 +372,10 @@ if(length(index) > 1){
       confidence <- confidence[!confidence$cluster %in% remove_clusters,]
     }
   }
-  
+  colnames(confidence) <-   c('Frequency', 'Contig_length', 'cutted', 'RdRP',
+                               'RdRP_blastx_hits', 'RdRP_identity', 'nr_blastx_hits', 'nr_identity', 'NR_sstart',
+                               'NR_send', 'nt_blast_hits', 'nt_identity', 'NT_sstart', 'NT_send', 'TPM',
+                               'Cluster', 'Correlation')
   write.xlsx(confidence,file = paste0(args[2],'.final.confidence_table.xlsx'),rowNames = T)
   write.table(rownames(confidence),file = "Cor_contigs.txt",row.names = F,col.names = F,quote = F,sep = ',')
   
