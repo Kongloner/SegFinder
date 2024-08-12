@@ -114,7 +114,7 @@ Assuming all databases are stored in the SegDB folder in the current working dir
                --datatype 2  \
                --assemble megahit \
                --thread 20 \
-               --stage preprocess \
+               --stage preprocess 
 ```
 
 #### Step 2: Discovery of RdRP for RNA viruses        
