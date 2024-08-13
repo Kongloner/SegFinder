@@ -114,7 +114,7 @@ Assuming all databases are stored in the SegDB folder in the current working dir
                --datatype 2  \
                --assemble megahit \
                --thread 20 \
-               --stage preprocess \
+               --stage preprocess 
 ```
 
 #### Step 2: Discovery of RdRP for RNA viruses        
@@ -139,11 +139,11 @@ Assuming all databases are stored in the SegDB folder in the current working dir
                --cor 0.8 \
                --method salmon  \
                --stage segment_find \
-               --library_ID SRR7102799 \
+               --library_ID SRR7102799 
 ``` 
 
 ## Cite this article
-Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: Segment RNA virus discovery based on correlation in multiple libraries. ----------; doi: -------------------  
+Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: an automated tool for identifying RNA virus genome segments through co-occurrence in multiple sequenced samples. ----------; doi: -------------------  
 \# equally contributed    
 
   
