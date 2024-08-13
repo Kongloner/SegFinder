@@ -31,9 +31,6 @@ colnames(r_data) <- r_data[1,]
 rownames(r_data) <- r_data[,1]
 r_data <- r_data[-1][-1,]
 
-# r_data <- r_data[setdiff(rownames(r_data),rdrp_name),]
-# r_data <- r_data[,setdiff(colnames(r_data),rdrp_name)]
-
 contigs <- colnames(p_data)
 p_data <- as.data.frame(lapply(p_data, as.numeric))
 r_data <- as.data.frame(lapply(r_data, as.numeric))
@@ -45,9 +42,7 @@ data <- apply(data,2,sum)
 index <- which(data >= 1)
 
 if(length(index) > 1){
-  # write.table(contigs[index],file = paste0('Cor_contigs.txt'),row.names = F,col.names = F,quote = F,sep = ',')
   rsem <- fread('RSEM_rdrp.csv',header = F,data.table = FALSE)
-  # rsem <- read.csv('RSEM_rdrp.csv',header = F)
   colnames(rsem) <- rsem[1,]
   rsem <- rsem[-1,]
   colnames(rsem)[1] <- 'Name'
@@ -421,16 +416,12 @@ if(length(index) > 1){
       as_tibble() %>%
       group_by(value) %>%
       summarize(n=n()) -> vertices
-    colnames(vertices) <- c("node", "n")
-    
-    # write.csv(vertices,"vertices.csv",quote = FALSE,col.names = NA,row.names = FALSE)
-    # head(vertices)
+      colnames(vertices) <- c("node", "n")
     
     # Construct graph structure data
     g <- graph_from_data_frame(cor.data, vertices = vertices, directed = FALSE )
     #g
     
-
    # is.simple(g) # Not a simple graph, link count will be high, so need to convert to a simple graph
     E(g)$weight <- 1
     g <- igraph::simplify(g,
@@ -460,27 +451,20 @@ if(length(index) > 1){
     
     # Set drawing colors
     # Set node and group background colors
-    color <- c(rgb(65,179,194,maxColorValue = 255),
-               rgb(255,255,0,maxColorValue = 255),
-               rgb(201,216,197,maxColorValue = 255))
-    names(color) <- unique(V(g)$type) # Name the colors with node type attributes
-    V(g)$point.col <- color[match(V(g)$type,names(color))] # Set node color.
-    # names(color2) <- unique(V(g)$type) # If you want node color to be different from background color, you can set a separate color set for nodes.
-    # V(g)$point.col <- color2[match(V(g)$type,names(color2))]
-    # Edge color set according to correlation positive or negative
-    # E(g)$color <- ifelse(E(g)$linetype == "positive",rgb(255,215,0,maxColorValue = 255),"gray50")
+    degree_levels <- unique(V(g)$degree)
+    color <- colorRampPalette(c("red", "yellow", "green"))(length(degree_levels))
+    names(color) <- degree_levels
+    V(g)$point.col <- color[match(V(g)$degree, names(color))]
+    
     E(g)$color <- ifelse(E(g)$linetype == "positive","red",rgb(0,147,0,maxColorValue = 255))
     ceb <- cluster_edge_betweenness(g)
     
     ### Draw fr layout network graph - without adding background color
     pdf(paste0(args[2],".network_group_fr.pdf"),family = "Times",width = 10,height = 12)
-    #pdf("network_group_fr.pdf",family = "Times",width = 10,height = 12)
     par(mar=c(5,2,1,2))
     plot(ceb, g, layout=layout2,
          vertex.color=V(g)$point.col,
          vertex.frame.color ="black",
-         vertex.border=V(g)$point.col,
-         # vertex.size=V(g)$n,
          vertex.label=g$name,
          vertex.label.cex=0.8,
          vertex.label.col="black",
@@ -488,22 +472,28 @@ if(length(index) > 1){
          edge.width=abs(E(g)$r)*2,
          edge.curved = TRUE
     )
+    
+    # Add the first legend for the edge width representing |r-value|
     legend(
       title = "|r-value|",
-      list(x = min(layout1[,1])+0.4,
-           y = min(layout1[,2])-0.17),
-      legend = c(as.numeric(args[1]),1.0),
+      x = min(layout2[,1])+0.4,  # Adjust the x-position
+      y = min(layout2[,2])-0.17, # Adjust the y-position
+      legend = c(as.numeric(args[1]), 1.0),
       col = "black",
-      lty=1,
-      lwd=c(as.numeric(args[1]),1.0)*2,
+      lty = 1,
+      lwd = c(as.numeric(args[1]), 1.0)*2
     )
-    legend(
-      title = "Correlation (??)",
-      list(x = min(layout1[,1])+0.8,
-           y = min(layout1[,2])-0+-7),  # The position of the legend needs to be adjusted according to your own data, it needs to be manually adjusted later.
-      lty=1,
-      lwd=1
-    )
+    
+    # Add the second legend for Correlation type
+    # legend(
+    #   title = "Correlation (??)",
+    #   list(x = min(layout2[,1])+0.8,  # Adjust the x-position
+    #   y = min(layout2[,2])-0.17), # Adjust the y-position
+    #   legend = c("Positive", "Negative"),  # Add appropriate labels
+    #   col = c("red", rgb(0,147,0,maxColorValue = 255)), # Colors for positive and negative correlations
+    #   lty = 1,
+    #   lwd = 1
+    # )
     dev.off()
     
   }else{
