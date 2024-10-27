@@ -88,7 +88,7 @@ for (pkg in bioconductor.packages) {
 ```
 
 ### step4: Download and configure the database
-
+The databases require substantial disk space, so please ensure sufficient storage is available before proceeding. If you already have these databases, you may skip the download step and proceed directly to configuration. For those who need to download the databases, note that the speed will depend on your internet connection. To enhance efficiency, you may also consider using alternative methods, such as the Aspera (ascp) protocol.
 #### 1) accession2taxid
 ```shell
 #Download the `prot.accession2taxid.gz` file
