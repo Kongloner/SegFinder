@@ -126,19 +126,12 @@ Assuming all databases are stored in the `SegDB` folder in the current working d
 
 #### Step 2: Discovery of RdRP for RNA viruses        
 ```shell
-./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/NT/nt_noViruses \
-               --nt Seg_DB/NT/nt  \
-               --nr Seg_DB/NR/nr \
-               --stage rdrp_find
+./SegFinder.sh  --stage rdrp_find
 ```
 
 #### Step 3: Segmented RNA virus finder        
 ```shell
-./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/NT/nt_noViruses \
-               --nt Seg_DB/NT/nt  \
-               --stage segment_find \
+./SegFinder.sh --stage segment_find \
                --library_ID SRR7102799 
 ```
 Required arguments:     
