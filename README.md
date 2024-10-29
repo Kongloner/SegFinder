@@ -54,7 +54,7 @@ conda create -n SegFinder python=3.9.13
 ```shell
 conda activate SegFinder   
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
-conda install diamond==2.1.8
+conda install -c bioconda diamond==2.1.8
 ``` 
 
 ### step3: Install R and R package  
@@ -143,8 +143,25 @@ Assuming all databases are stored in the SegDB folder in the current working dir
                --method salmon  \
                --stage segment_find \
                --library_ID SRR7102799 
-``` 
-
+```
+Required arguments:
+ `--stage`: specify the stage of the pipeline to run: preprocess, rdrp_find, or segment_find; default preprocess
+ `-o`: the directory to output the results; default ./
+ `--indata`: the location of the raw data
+ `--thread`: the number of threads; default 10
+ [--cor]... correlation coefficient; default 0.8
+ [--nt_noViruses]... the location of nt_noViruses database, used to remove viral sequence contamination, optional
+ [--nt]... the location of nt database
+ [--nr]... the location of nr database
+ [--method]... the method to quantify the transcript abundances,salmon or RSEM,default salmon
+ [--datatype]... the type of input data single(input 1) or double(input 2)
+ [--taxidDB]... the location of prot.accession2taxid database
+ [--rm_length]... the contigs whose length less than this value will be removed; default 600
+ [--min_rdrp_multi]... minimum length of rdrp and their re-assembled contigs to be retained; default 100
+ [--min_nordrp_multi]... minimum length of non-rdrp and their re-assembled contigs to be retained; default 20
+ [--library_ID]... the library you want to search, can input multiple IDs separated by spaces
+ [--assemble]... tthe tool to assemble the raw reads, megahit or spades; default spades
+ [--min_TPM]... if there exist the contig whose TPM is less than this value, the cluster it is in will be removed; default 200
 ## Cite this article
 Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: an automated tool for identifying RNA virus genome segments through co-occurrence in multiple sequenced samples. ----------; doi: -------------------  
 \# equally contributed    
