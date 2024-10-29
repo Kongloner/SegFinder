@@ -1,4 +1,4 @@
-# SegFinder   
+* SegFinder   
 **SegFinder** is a correlation-based approach that enhances abundance similarity and co-occurrence methods to **detect new genomic segments of RNA viruses** by analyzing abundance patterns and their correlations across samples.
 
 ## 1. segmented virus finder workflow  
@@ -29,6 +29,9 @@ sudo apt install sqlite3 libsqlite3-dev git-all
 git clone https://github.com/Kongloner/SegFinder.git
 chmod +x SegFinder/SegFinder.sh
 ```
+#### Using Singularity Image to Install Dependencies (Optional)
+To simplify the process for users, we have prepared a `Singularity image` that provides a complete runtime environment. Users can directly use this image to run the entire workflow without having to manually install complex dependencies. This means users can `skip steps 2 and 3` below.
+
 ### step2: Install conda and necessary tools
 #### 1) Download anaconda3
 ```shell
