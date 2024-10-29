@@ -117,7 +117,7 @@ Note: If you need to remove contamination from viral sequences, you can download
 
 ```./SegFinder.sh --help``` for **help**
 
-Assuming all databases are stored in the `SegDB` folder in the current working directory. Of course, you can input the actual paths of these databases according to your specific situation; the paths provided here are just for example.
+Assuming all databases are stored in the `SegDB` folder in the current working directory. Of course, you can input the actual paths of these databases according to your specific situation.
 #### Step 1: Raw reads Quality Control and Assembly  
 ```shell
 ./SegFinder.sh --indata testdata \
