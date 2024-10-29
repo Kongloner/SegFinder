@@ -128,7 +128,7 @@ Assuming all databases are stored in the SegDB folder in the current working dir
                --stage rdrp_find
 ```
 
-#### Step 3: segmented RNA virus finder        
+#### Step 3: Segmented RNA virus finder        
 ```shell
 ./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
                --nt_noViruses Seg_DB/NT/nt_noViruses \

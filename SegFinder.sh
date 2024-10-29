@@ -26,7 +26,7 @@ Usage
  [--incontig]... the contig you want to search
  [--thread]... default 10
  [--cor]... correlation coefficient; default 0.8
- [--nt_noViruses]... the location of nt_noViruses database
+ [--nt_noViruses]... the location of nt_noViruses database, used to remove viral sequence contamination, optional
  [--nt]... the location of nt database
  [--nr]... the location of nr database
  [--method]... the method to quantify the transcript abundances,salmon or RSEM,default salmon
@@ -127,10 +127,10 @@ validate_params() {
         exit 1
     fi
 
-    if [[ -z $nt_noViruses_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
-        echo "please input the location of nt_noViruses database!!! --nt_noViruses"
-        exit 1
-    fi
+#    if [[ -z $nt_noViruses_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
+#        echo "please input the location of nt_noViruses database!!! --nt_noViruses"
+#        exit 1
+#    fi
 
     if [[ -z $taxidDB_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
         echo "please input the location of prot.accession2taxid database!!! --taxidDB"
@@ -256,25 +256,45 @@ if [ $stage == "rdrp_find" ]; then
              -f 6 qseqid qlen sseqid stitle pident length evalue qstart qend
 	   cat ${file}_assemble_nr.rdrp | cut -f1 | sort -u > ${file}_assemble_nr.rdrp.list
 	   seqtk subseq ${file}_assemble_nr.virus.match ${file}_assemble_nr.rdrp.list > ${file}.rdrp.virus.match
-	   cd ${present_loc}
-	   run_command Rscript ${present_loc}/src/R/blastn_nt_novirus.R --db ${nt_noViruses_loc} --evalue 1E-10 --input ${processed_data}/${file}.rdrp.virus.match --out_fasta ${processed_data}/${file}.rdrp.virus.match.modify --out_tsv ${processed_data}/${file}.blastn.tsv --threads ${thread}
-	   cd ${processed_data}	
-	   diamond  blastx \
-                --more-sensitive \
-                -q ${file}.rdrp.virus.match.modify \
-                -d  RdRP_only \
-                -o ${file}.megahit.fa.rdrp \
-                -e 1E-3 \
-                -k 1 \
-                -p ${thread} \
-                -f 6 qseqid qlen sseqid stitle pident length evalue sstart send
-        cat ${file}.megahit.fa.rdrp | cut -f1 | sort -u > ${file}_assemble_nr.rdrp.list
-        seqtk subseq ${file}.rdrp.virus.match.modify ${file}_assemble_nr.rdrp.list > ${file}.megahit.fa.rdrp.fasta
-	    mv ${file}_assemble_nr ${file}.megahit.fa.nr
-	    rm -rf ${file}.assemble ${file}_assemble_nr.rdrp.list 
-	    rm -rf ${file}_accession_list.txt.nr ${file}_megahit_assemble_nr ${file}_assemble_nr.rdrp.list ${file}_assemble_nr.virus.list
-        cd ${present_loc}
-		echo "----Finished RNA virus RdRP finding for $file----"
+
+	cd ${present_loc}
+
+	# If nt_noViruses_loc is provided, run the R script and generate the modify file
+	if [[ -n "$nt_noViruses_loc" ]]; then
+		run_command Rscript ${present_loc}/src/R/blastn_nt_novirus.R --db ${nt_noViruses_loc} --evalue 1E-10 --input ${processed_data}/${file}.rdrp.virus.match --out_fasta ${processed_data}/${file}.rdrp.virus.match.modify --out_tsv ${processed_data}/${file}.blastn.tsv --threads ${thread}
+		input_fasta="${processed_data}/${file}.rdrp.virus.match.modify"  # Use modified fasta file
+	else
+		input_fasta="${processed_data}/${file}.rdrp.virus.match"  # Use original file
+	fi
+
+	cd ${processed_data}
+
+	# Use the selected input_fasta for diamond analysis
+	diamond  blastx \
+		--more-sensitive \
+		-q ${input_fasta} \
+		-d  RdRP_only \
+		-o ${file}.megahit.fa.rdrp \
+		-e 1E-3 \
+		-k 1 \
+		-p ${thread} \
+		-f 6 qseqid qlen sseqid stitle pident length evalue sstart send
+
+	cat ${file}.megahit.fa.rdrp | cut -f1 | sort -u > ${file}_assemble_nr.rdrp.list
+
+	# If nt_noViruses_loc was provided, the modify file was used
+	if [[ -n "$nt_noViruses_loc" ]]; then
+		seqtk subseq ${file}.rdrp.virus.match.modify ${file}_assemble_nr.rdrp.list > ${file}.megahit.fa.rdrp.fasta
+	else
+		seqtk subseq ${file}.rdrp.virus.match ${file}_assemble_nr.rdrp.list > ${file}.megahit.fa.rdrp.fasta
+	fi
+
+	mv ${file}_assemble_nr ${file}.megahit.fa.nr
+	rm -rf ${file}.assemble ${file}_assemble_nr.rdrp.list 
+	rm -rf ${file}_accession_list.txt.nr ${file}_megahit_assemble_nr ${file}_assemble_nr.rdrp.list ${file}_assemble_nr.virus.list
+	cd ${present_loc}
+	echo "----Finished RNA virus RdRP finding for $file----"
+
 	done;
 	echo "RdRP finding done. To run the next stage, use --stage virus_find"
 fi
@@ -375,95 +395,135 @@ if [ $stage == "segment_find" ]; then
 
 		rm -rf ${library_ID}.megahit.prot.fasta-cd-hit ${library_ID}_ID.txt ${library_ID}.megahit.fa-cd-hit.prot.fasta ${library_ID}.megahit.fa-cd-hit  ${library_ID}.megahit.prot.fasta-cd-hit.clstr ${library_ID}.megahit.fa-cd-hit.clstr
 
-		sed  "s/>//g" ${library_ID}.list > ${library_ID}.list.tsv
-		seqtk subseq ${library_ID}.megahit.fa  ${library_ID}.list.tsv > ${library_ID}.re.fasta
-	    cd ${present_loc}    
+	sed  "s/>//g" ${library_ID}.list > ${library_ID}.list.tsv
+	seqtk subseq ${library_ID}.megahit.fa ${library_ID}.list.tsv > ${library_ID}.re.fasta
+
+	cd ${present_loc}
+
+	# If nt_noViruses_loc is provided, run the R script to generate the modify file
+	if [[ -n "$nt_noViruses_loc" ]]; then
 		run_command Rscript ${present_loc}/src/R/blastn_nt_novirus.R --evalue 1E-3 --db ${nt_noViruses_loc} --input ${megahit}/${library_ID}.re.fasta --out_fasta ${megahit}/${library_ID}.re.fasta.modify --out_tsv ${megahit}/${library_ID}.re.blastn.tsv --threads ${thread}
-	    cd ${megahit}
-		awk -F " " '{print $1}' ${library_ID}.re.blastn.tsv | uniq > ${library_ID}.re.blastn.txt
-	    
-	    grep ">" ${library_ID}.re.fasta.modify > ${library_ID}.re.fasta.modify.list
-	    sed -i "s/>//" ${library_ID}.re.fasta.modify.list
-	   
-	    grep -vFf ${library_ID}.re.fasta.modify.list ${library_ID}.re.blastn.txt > ${library_ID}.re.fasta.modify.list_del
-	    grep -Ff ${library_ID}.re.fasta.modify.list_del ${library_ID}_megahit_assemble_nr.edited.tsv > ${library_ID}_megahit_assemble_nr.edited.tsv_del
-	    grep -i -E 'virus|viruses' ${library_ID}_megahit_assemble_nr.edited.tsv_del > ${library_ID}_megahit_assemble_nr.edited.tsv_del_re
-	    awk -F " " '{print $2}' ${library_ID}_megahit_assemble_nr.edited.tsv_del_re > ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt
-	    seqtk subseq ${library_ID}.re.fasta ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt > ${library_ID}.re.fasta_del
-	    awk '/^>/{p=!d[$1]}p' ${library_ID}.re.fasta.modify ${library_ID}.re.fasta_del > ${library_ID}.re.fasta-1
-	    mv ${library_ID}.re.fasta-1 ${library_ID}.re.fasta
-	   
-	    ##########again########################################################
-	    rm ${library_ID}.re.blastn.tsv ${library_ID}.re.blastn.txt ${library_ID}.re.fasta.modify.list ${library_ID}.re.fasta.modify.list_del ${library_ID}_megahit_assemble_nr.edited.tsv_del
-	    rm ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt ${library_ID}.re.fasta_del
-	   
-	    #####RdRP#############################################################
-		cd ${rdrp}
-		mv ${library_ID}.megahit.fa.megahit.rdrp.virus.match ${library_ID}.rdrp.virus.match
+		input_fasta="${megahit}/${library_ID}.re.fasta.modify"
+		input_blastn="${megahit}/${library_ID}.re.blastn.tsv"
+	else
+		input_fasta="${megahit}/${library_ID}.re.fasta"
+		input_blastn=""  # No blastn results if nt_noViruses_loc is not provided
+	fi
 
-		run_command cd-hit-est -M 0 -T ${thread} -i ${library_ID}.rdrp.virus.match -o ${library_ID}.rdrp.virus.match-cd-hit -c 0.999
+	cd ${megahit}
 
-		sed  "s/>${library_ID}_/>/g" ${library_ID}.rdrp.virus.match-cd-hit > ${library_ID}.rdrp.virus.match-cd-hit-gai
-		${present_loc}/bin/ORFfinder  -in ${library_ID}.rdrp.virus.match-cd-hit-gai -ml 30 -out ${library_ID}.rdrp.virus.match-cd-hit.prot.fasta -s 2
+	# Proceed with blastn processing only if nt_noViruses_loc is provided
+	if [[ -n "$input_blastn" ]]; then
+		awk -F " " '{print $1}' ${input_blastn} | uniq > ${library_ID}.re.blastn.txt
 
-		run_command cd-hit -M 0 -T ${thread} -i ${library_ID}.rdrp.virus.match-cd-hit.prot.fasta -o ${library_ID}.rdrp.virus.match-cd-hit.prot.fasta-cd-hit -c 0.999
-		grep -oP '(?<=_)[^:]+(?=:)' ${library_ID}.rdrp.virus.match-cd-hit.prot.fasta-cd-hit | uniq > ${library_ID}-rdrp_ID.txt
-		sed  "s/^/>${library_ID}_/g" ${library_ID}-rdrp_ID.txt > ${library_ID}.rdrp.list-1
+		grep ">" ${input_fasta} > ${library_ID}.re.fasta.modify.list
+		sed -i "s/>//" ${library_ID}.re.fasta.modify.list
 
-		sed  "s/>//g" ${library_ID}.rdrp.list-1 > ${library_ID}.rdrp.list
-		seqtk subseq ${library_ID}.rdrp.virus.match ${library_ID}.rdrp.list > ${library_ID}.rdrp.fasta
-		
-	    grep ">" ${library_ID}.rdrp.fasta > ${library_ID}.rdrp.list
-	    sed  "s/>//g" ${library_ID}.rdrp.list > ${library_ID}.rdrp.list.tsv
-	    rm -rf ${library_ID}.megahit.fa.megahit.rdrp.virus.match-cd-hit ${library_ID}.megahit.fa.megahit.rdrp.virus.match-cd-hit.clstr ${library_ID}.megahit.fa.megahit.rdrp.virus.match-cd-hit.prot.fasta-cd-hit.clstr ${library_ID}.megahit.fa.megahit.rdrp.virus.match-cd-hit.prot.fasta ${library_ID}.rdrp.blastn.tsv
+		grep -vFf ${library_ID}.re.fasta.modify.list ${library_ID}.re.blastn.txt > ${library_ID}.re.fasta.modify.list_del
+		grep -Ff ${library_ID}.re.fasta.modify.list_del ${library_ID}_megahit_assemble_nr.edited.tsv > ${library_ID}_megahit_assemble_nr.edited.tsv_del
+		grep -i -E 'virus|viruses' ${library_ID}_megahit_assemble_nr.edited.tsv_del > ${library_ID}_megahit_assemble_nr.edited.tsv_del_re
+		awk -F " " '{print $2}' ${library_ID}_megahit_assemble_nr.edited.tsv_del_re > ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt
+		seqtk subseq ${library_ID}.re.fasta ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt > ${library_ID}.re.fasta_del
+		awk '/^>/{p=!d[$1]}p' ${input_fasta} ${library_ID}.re.fasta_del > ${library_ID}.re.fasta-1
+		mv ${library_ID}.re.fasta-1 ${library_ID}.re.fasta
 
-		mkdir -p $megahit/total.nr.rdrp.megahit.fa_contigs
-		for file in "${result_files[@]}";
-		do
-		if [ $datatype -eq 1 ]; then run_command perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --single $processed_data/${file}.clean.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
-		if [ $datatype -eq 2 ]; then run_command perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --left $processed_data/${file}.clean_1.fq.gz --right $processed_data/${file}.clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2  --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference; fi
+		# Cleanup temporary files
+		rm ${input_blastn} ${library_ID}.re.blastn.txt ${library_ID}.re.fasta.modify.list ${library_ID}.re.fasta.modify.list_del ${library_ID}_megahit_assemble_nr.edited.tsv_del
+		rm ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt ${library_ID}.re.fasta_del
+	fi
 
-		if [ $quantify_method == RSEM ]; then mv $megahit/${file}_RSEM-gai-total/RSEM.genes.results $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results; fi
-		if [ $quantify_method == salmon ]; then mv $megahit/${file}_RSEM-gai-total/quant.sf $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results; fi
+	########## RdRP #############################################################
+
+	cd ${rdrp}
+	mv ${library_ID}.megahit.fa.megahit.rdrp.virus.match ${library_ID}.rdrp.virus.match
+
+	run_command cd-hit-est -M 0 -T ${thread} -i ${library_ID}.rdrp.virus.match -o ${library_ID}.rdrp.virus.match-cd-hit -c 0.999
+
+	sed "s/>${library_ID}_/>/g" ${library_ID}.rdrp.virus.match-cd-hit > ${library_ID}.rdrp.virus.match-cd-hit-gai
+	${present_loc}/bin/ORFfinder -in ${library_ID}.rdrp.virus.match-cd-hit-gai -ml 30 -out ${library_ID}.rdrp.virus.match-cd-hit.prot.fasta -s 2
+
+	run_command cd-hit -M 0 -T ${thread} -i ${library_ID}.rdrp.virus.match-cd-hit.prot.fasta -o ${library_ID}.rdrp.virus.match-cd-hit.prot.fasta-cd-hit -c 0.999
+
+	grep -oP '(?<=_)[^:]+(?=:)' ${library_ID}.rdrp.virus.match-cd-hit.prot.fasta-cd-hit | uniq > ${library_ID}-rdrp_ID.txt
+	sed "s/^/>${library_ID}_/g" ${library_ID}-rdrp_ID.txt > ${library_ID}.rdrp.list-1
+
+	sed "s/>//g" ${library_ID}.rdrp.list-1 > ${library_ID}.rdrp.list
+	seqtk subseq ${library_ID}.rdrp.virus.match ${library_ID}.rdrp.list > ${library_ID}.rdrp.fasta
+
+	grep ">" ${library_ID}.rdrp.fasta > ${library_ID}.rdrp.list
+	sed "s/>//g" ${library_ID}.rdrp.list > ${library_ID}.rdrp.list.tsv
+
+	# Clean up temporary files
+	rm -rf ${library_ID}.megahit.fa.megahit.rdrp.virus.match-cd-hit ${library_ID}.megahit.fa.megahit.rdrp.virus.match-cd-hit.clstr ${library_ID}.megahit.fa.megahit.rdrp.virus.match-cd-hit.prot.fasta-cd-hit.clstr ${library_ID}.megahit.fa.megahit.rdrp.virus.match-cd-hit.prot.fasta ${library_ID}.rdrp.blastn.tsv
+
+	mkdir -p $megahit/total.nr.rdrp.megahit.fa_contigs
+
+	for file in "${result_files[@]}"; do
+		if [ $datatype -eq 1 ]; then
+			run_command perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --single $processed_data/${file}.clean.fq.gz --est_method $quantify_method --aln_method bowtie2 --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference
+		fi
+
+		if [ $datatype -eq 2 ]; then
+			run_command perl ${present_loc}/bin/align_and_estimate_abundance.pl --transcripts $megahit/${library_ID}.re.fasta --seqType fq --left $processed_data/${file}.clean_1.fq.gz --right $processed_data/${file}.clean_2.fq.gz --est_method $quantify_method --aln_method bowtie2 --output_dir $megahit/${file}_RSEM-gai-total --thread_count ${thread} --prep_reference
+		fi
+
+		if [ $quantify_method == RSEM ]; then
+			mv $megahit/${file}_RSEM-gai-total/RSEM.genes.results $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results
+		fi
+
+		if [ $quantify_method == salmon ]; then
+			mv $megahit/${file}_RSEM-gai-total/quant.sf $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results
+		fi
+
 		cp $megahit/${file}_RSEM-gai-total/${file}_RSEM.genes.results $megahit/total.nr.rdrp.megahit.fa_contigs
-		done;
+	done
 
-		for file in $megahit/total.nr.rdrp.megahit.fa_contigs/*.results; do mv ${file} "${file%.results}.result.tsv"; done
+	for file in $megahit/total.nr.rdrp.megahit.fa_contigs/*.results; do
+		mv ${file} "${file%.results}.result.tsv"
+	done
 
-		### coefficient-matrix
-		cp  $nr/${library_ID}_megahit_assemble_nr.edited.tsv $megahit
-		sed -i "s/#/_/" $megahit/${library_ID}_megahit_assemble_nr.edited.tsv
-		cp $rdrp/${library_ID}.rdrp.list.tsv  $megahit
-		run_command Rscript ${present_loc}/src/R/coefficient-matrix.R ${library_ID} $megahit  
-		blastn -query $megahit/"${library_ID}".re.fasta -db $nt_loc -out $megahit/"${library_ID}"_megahit_assemble_re_nt.tsv -evalue 1E-3 -outfmt "6 qseqid qlen sacc salltitles pident length evalue sstart send" -max_target_seqs 5 -num_threads ${thread}	
-		run_command diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db $megahit/RdRP_only -p ${thread}
-		diamond blastx -q ${present_loc}/rdrp/${library_ID}.rdrp.fasta -d $megahit/RdRP_only -o $megahit/${library_ID}.megahit.fa.rdrp.tsv --more-sensitive -e 1E-3 -k 5 -p ${thread} -f 6 qseqid qlen sseqid stitle pident length evalue sstart send
-		cp $nr/${library_ID}_megahit_assemble_nr $megahit/${library_ID}_megahit_assemble_nr.tsv
-		sed -i "s/#/_/" $megahit/"${library_ID}"_megahit_assemble_re_nt.tsv
-		awk '/^>/ {printf("%s\t", substr($0,2)); getline; print length($0)}' $megahit/"${library_ID}".re.fasta  | awk '{match($0, /len.*[0-9]*/); str=substr($0, RSTART, RLENGTH); match(str, /[0-9]+/); a=substr(str, RSTART, RLENGTH);if (a == $2) print $0"\tfalse"; else print $0"\ttrue"}' > $megahit/re.fasta_length.txt
-		cd $megahit
-		run_command Rscript ${present_loc}/src/R/Cor_contigs_extract.R  ${cor} ${library_ID}  ${min_TPM} ${min_rdrp_multi} ${min_nordrp_multi}	
-        cd ${present_loc} 
-		cp $megahit/${library_ID}.network_group_fr.pdf $network
-		cp $megahit/${library_ID}.final.confidence_table.xlsx $network
-		cp $megahit/${library_ID}.pre.confidence_table.xlsx $network
+	### Coefficient-matrix
+	cp $nr/${library_ID}_megahit_assemble_nr.edited.tsv $megahit
+	sed -i "s/#/_/" $megahit/${library_ID}_megahit_assemble_nr.edited.tsv
+	cp $rdrp/${library_ID}.rdrp.list.tsv $megahit
+	run_command Rscript ${present_loc}/src/R/coefficient-matrix.R ${library_ID} $megahit
 
-		rm -rf $megahit/*RSEM-gai-total
-		rm -rf $megahit/total.nr.rdrp.megahit.fa_contigs
-		rm -rf $megahit/*.fa
-		rm -rf $nr
-		rm -rf $rdrp/*rdrp.virus.match
-		rm -rf $rdrp/*_RSEM-gai-total
-		rm -rf $megahit/*.re.fasta.salmon_quasi.idx
-		rm -rf $megahit/cor.p.csv
-		rm -rf $megahit/cor.r.csv
-		rm -rf $megahit/RdRP_only.dmnd
-		rm -rf $rdrp/2.out
-		rm -rf $rdrp/3.out
-		cd ${present_loc}
-		mkdir -p $out_loc/${library_ID}
-		mv $megahit  $network $rdrp $out_loc/${library_ID}
-		echo "----Finished Segmented RNA virus finding for library: $library_ID----"
+	blastn -query $megahit/"${library_ID}".re.fasta -db $nt_loc -out $megahit/"${library_ID}"_megahit_assemble_re_nt.tsv -evalue 1E-3 -outfmt "6 qseqid qlen sacc salltitles pident length evalue sstart send" -max_target_seqs 5 -num_threads ${thread}
+
+	run_command diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db $megahit/RdRP_only -p ${thread}
+	diamond blastx -q ${present_loc}/rdrp/${library_ID}.rdrp.fasta -d $megahit/RdRP_only -o $megahit/${library_ID}.megahit.fa.rdrp.tsv --more-sensitive -e 1E-3 -k 5 -p ${thread} -f 6 qseqid qlen sseqid stitle pident length evalue sstart send
+
+	cp $nr/${library_ID}_megahit_assemble_nr $megahit/${library_ID}_megahit_assemble_nr.tsv
+	sed -i "s/#/_/" $megahit/"${library_ID}"_megahit_assemble_re_nt.tsv
+
+	awk '/^>/ {printf("%s\t", substr($0,2)); getline; print length($0)}' $megahit/"${library_ID}".re.fasta | awk '{match($0, /len.*[0-9]*/); str=substr($0, RSTART, RLENGTH); match(str, /[0-9]+/); a=substr(str, RSTART, RLENGTH);if (a == $2) print $0"\tfalse"; else print $0"\ttrue"}' > $megahit/re.fasta_length.txt
+
+	cd $megahit
+	run_command Rscript ${present_loc}/src/R/Cor_contigs_extract.R ${cor} ${library_ID} ${min_TPM} ${min_rdrp_multi} ${min_nordrp_multi}
+
+	cd ${present_loc}
+	cp $megahit/${library_ID}.network_group_fr.pdf $network
+	cp $megahit/${library_ID}.final.confidence_table.xlsx $network
+	cp $megahit/${library_ID}.pre.confidence_table.xlsx $network
+
+	# Clean up
+	rm -rf $megahit/*RSEM-gai-total
+	rm -rf $megahit/total.nr.rdrp.megahit.fa_contigs
+	rm -rf $megahit/*.fa
+	rm -rf $nr
+	rm -rf $rdrp/*rdrp.virus.match
+	rm -rf $rdrp/*_RSEM-gai-total
+	rm -rf $megahit/*.re.fasta.salmon_quasi.idx
+	rm -rf $megahit/cor.p.csv
+	rm -rf $megahit/cor.r.csv
+	rm -rf $megahit/RdRP_only.dmnd
+	rm -rf $rdrp/2.out
+	rm -rf $rdrp/3.out
+	cd ${present_loc}
+	mkdir -p $out_loc/${library_ID}
+	mv $megahit $network $rdrp $out_loc/${library_ID}
+	echo "----Finished Segmented RNA virus finding for library: $library_ID----"
+
 	done;	
 fi
 
