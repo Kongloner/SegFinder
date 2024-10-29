@@ -147,7 +147,7 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 Required arguments:
 
  `--stage`: specify the stage of the pipeline to run: preprocess, rdrp_find, or segment_find; default preprocess  
- `-o`: the directory to output the results; default ./  
+ `-o`: the directory to output the results; default current directory    
  `--indata`: the location of the raw data  
  `--thread`: the number of threads; default 10  
  `--cor`: correlation coefficient; default 0.8  
