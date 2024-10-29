@@ -111,7 +111,7 @@ gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 #### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
 #### 3) [NCBI Non-Redundant Nucleotide Database (NT)](./flow/db_NT.md)
 #### 4) [Virus-free Non-Redundant Nucleotide Database (Virus-free NT)](./flow/db_nt_noViruses.md)
-
+Note: If you need to remove contamination from viral sequences, you can download this non-viral database to align and filter out the contaminating sequences. Use the `--nt_noViruses` parameter to specify the path to this database. This database is optional and does not need to be used unless contamination removal is required.
 
 ### Using    
 
@@ -121,9 +121,6 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 #### Step 1: Raw reads Quality Control and Assembly  
 ```shell
 ./SegFinder.sh --indata testdata \
-               --datatype 2  \
-               --assemble megahit \
-               --thread 20 \
                --stage preprocess 
 ```
 
@@ -133,8 +130,6 @@ Assuming all databases are stored in the SegDB folder in the current working dir
                --nt_noViruses Seg_DB/NT/nt_noViruses \
                --nt Seg_DB/NT/nt  \
                --nr Seg_DB/NR/nr \
-               --thread 20 \
-               --datatype 2 \
                --stage rdrp_find
 ```
 
@@ -143,11 +138,6 @@ Assuming all databases are stored in the SegDB folder in the current working dir
 ./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
                --nt_noViruses Seg_DB/NT/nt_noViruses \
                --nt Seg_DB/NT/nt  \
-               --thread 20 \
-               --rm_length 600 \
-               --datatype 2 \
-               --cor 0.8 \
-               --method salmon  \
                --stage segment_find \
                --library_ID SRR7102799 
 ```
@@ -161,7 +151,7 @@ Required arguments:
  
  More optional arguments: 
 
- `--datatype`: the type of input data single(input 1) or double(input 2) (default: 2).
+ `--datatype`: specifies the type of input sequencing data, either single-end (1) or paired-end (2) reads (default: 2).
 
  `-o`: the directory to output the results (default: current directory). 
  
