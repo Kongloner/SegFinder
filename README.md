@@ -30,7 +30,16 @@ git clone https://github.com/Kongloner/SegFinder.git
 chmod +x SegFinder/SegFinder.sh
 ```
 #### Using Singularity Image to Install Dependencies (Optional)
-To simplify the process for users, we have prepared a `Singularity image` that provides a complete runtime environment. Users can directly use this image to run the entire workflow without having to manually install complex dependencies. This means users can `skip steps 2 and 3` below.
+To simplify the setup process, we have prepared a pre-built Singularity image that includes the complete runtime environment required to execute the entire workflow. Users can utilize this image directly without the need to manually install complex dependencies, effectively allowing you to **skip steps 2 and 3** below.
+
+To pull and use the Singularity image, run the following commands:
+```shell
+# Pull the pre-built Singularity image
+singularity build segment_env.sif library://kongloner/my_collection/segment_container:latest
+
+# Launch a shell in the Singularity container
+singularity shell segment_env.sif
+
 
 ### step2: Install conda and necessary tools
 #### 1) Download anaconda3
