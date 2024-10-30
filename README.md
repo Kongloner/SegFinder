@@ -40,6 +40,8 @@ singularity build segment_env.sif library://kongloner/my_collection/segment_cont
 # Launch a shell in the Singularity container
 singularity shell segment_env.sif
 ```
+Note:By default, Singularity does not expose the entire host file system to the container for security reasons. Only a few common directories like /home/$USER, /tmp, and /proc are mounted.To access other directories, use the --bind option. For example, to mount the /home directory into the container:
+`singularity shell --bind /home:/home segment_env.sif`
 
 ### step2: Install conda and necessary tools
 #### 1) Download anaconda3
