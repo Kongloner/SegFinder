@@ -29,6 +29,18 @@ sudo apt install sqlite3 libsqlite3-dev git-all
 git clone https://github.com/Kongloner/SegFinder.git
 chmod +x SegFinder/SegFinder.sh
 ```
+#### Using Singularity Image to Install Dependencies (Optional)
+To simplify the setup process, we have prepared a **pre-built Singularity image** that includes the complete runtime environment required to execute the entire workflow. Users can utilize this image directly without the need to manually install complex dependencies, effectively allowing you to **skip steps 2 and 3** below.
+
+To pull and use the Singularity image, run the following commands:
+```shell
+# Pull the pre-built Singularity image, you can also manually download the image from https://cloud.sylabs.io/library/kongloner/my_collection/segment_container
+singularity build segment_env.sif library://kongloner/my_collection/segment_container:latest
+
+# Launch a shell in the Singularity container
+singularity shell segment_env.sif
+```
+
 ### step2: Install conda and necessary tools
 #### 1) Download anaconda3
 ```shell
@@ -55,6 +67,7 @@ conda create -n SegFinder python=3.9.13
 conda activate SegFinder   
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
 conda install -c bioconda diamond==2.1.8
+conda install -c bioconda biopython==1.77
 ``` 
 
 ### step3: Install R and R package  
@@ -68,7 +81,7 @@ The first step is to install [**R software**](https://www.r-project.org/). Once 
 ```
 ```shell
 # install packages from CRAN
-cran.packages <- c("BiocManager", "abind", "argparse", "openxlsx", "data.table", "doParallel", "dplyr", "foreach", "magrittr", "stringr", "tidyr", "Matrix", "igraph")
+cran.packages <- c("BiocManager", "abind", "argparse", "openxlsx", "data.table", "doParallel", "dplyr", "foreach", "magrittr", "stringr", "psych","tidyr", "Matrix", "igraph")
 
 for (pkg in cran.packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
@@ -115,35 +128,25 @@ Note: If you need to remove contamination from viral sequences, you can download
 
 ### Using    
 
-```./SegFinder.sh --help``` for **help**
-
-Assuming all databases are stored in the `SegDB` folder in the current working directory. Of course, you can input the actual paths of these databases according to your specific situation; the paths provided here are just for example.
+Assuming all databases are stored in the `SegDB` folder in the current working directory. Of course, you can input the actual paths of these databases according to your specific situation.
 #### Step 1: Raw reads Quality Control and Assembly  
 ```shell
-./SegFinder.sh --indata testdata \
-               --stage preprocess 
+./SegFinder.sh --indata testdata  --stage preprocess         
 ```
 
 #### Step 2: Discovery of RdRP for RNA viruses        
 ```shell
-./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/NT/nt_noViruses \
-               --nt Seg_DB/NT/nt  \
-               --nr Seg_DB/NR/nr \
-               --stage rdrp_find
+./SegFinder.sh  --stage rdrp_find
 ```
 
 #### Step 3: Segmented RNA virus finder        
 ```shell
-./SegFinder.sh --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --nt_noViruses Seg_DB/NT/nt_noViruses \
-               --nt Seg_DB/NT/nt  \
-               --stage segment_find \
+./SegFinder.sh --stage segment_find \
                --library_ID SRR7102799 
 ```
 Required arguments:     
  
- `--indata`: the location of the raw data (in 'fastq' format).   
+ `--indata`: the location of the raw data (in 'fq.gz' format).   
 
  `--stage`: specify the stage of the pipeline to run: preprocess, rdrp_find, or segment_find. 
 
