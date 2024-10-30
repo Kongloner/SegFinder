@@ -67,6 +67,7 @@ conda create -n SegFinder python=3.9.13
 conda activate SegFinder   
 conda install -c bioconda fastp blast seqkit seqtk megahit cd-hit ribodetector salmon spades bowtie2
 conda install -c bioconda diamond==2.1.8
+pip install biopython==1.77
 ``` 
 
 ### step3: Install R and R package  
@@ -80,7 +81,7 @@ The first step is to install [**R software**](https://www.r-project.org/). Once 
 ```
 ```shell
 # install packages from CRAN
-cran.packages <- c("BiocManager", "abind", "argparse", "openxlsx", "data.table", "doParallel", "dplyr", "foreach", "magrittr", "stringr", "tidyr", "Matrix", "igraph")
+cran.packages <- c("BiocManager", "abind", "argparse", "openxlsx", "data.table", "doParallel", "dplyr", "foreach", "magrittr", "stringr", "psych","tidyr", "Matrix", "igraph")
 
 for (pkg in cran.packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
@@ -146,7 +147,7 @@ Assuming all databases are stored in the `SegDB` folder in the current working d
 ```
 Required arguments:     
  
- `--indata`: the location of the raw data (in 'fastq' format).   
+ `--indata`: the location of the raw data (in 'fq.gz' format).   
 
  `--stage`: specify the stage of the pipeline to run: preprocess, rdrp_find, or segment_find. 
 
