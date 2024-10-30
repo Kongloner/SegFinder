@@ -44,6 +44,7 @@ EOF
 }
 
 # Default parameters
+datatype=2
 thread=10
 cor=0.8
 rm_length=600
@@ -52,7 +53,11 @@ min_nordrp_multi=20
 min_TPM=200
 quantify_method="salmon"
 assemble_method="spades"
-stage="preprocess"
+# stage="preprocess"
+nt_loc="Seg_DB/NT/nt"
+nr_loc="Seg_DB/NR/nr"
+taxidDB_loc="Seg_DB/accession2taxid/prot.accession2taxid"
+
 
 # Parse command-line arguments
 parameters=$(getopt -o o: --long indata:,incontig:,thread:,cor:,datatype:,nt:,nr:,method:,stage:,min_multi:,min_TPM:,assemble:,library_ID:,rm_length:,nt_noViruses:,taxidDB:,help,version -n "$0" -- "$@")
@@ -102,40 +107,40 @@ validate_params() {
         exit 1
     fi
 
-    if [[ -z $datatype ]]; then
-        echo "please input the type of input data!!! --datatype"
-        exit 1
-    fi
+ #   if [[ -z $datatype ]]; then
+ #       echo "please input the type of input data!!! --datatype"
+ #       exit 1
+ #   fi
 
-    if [[ $datatype -ne 1 && $datatype -ne 2 ]]; then
-        echo 'please re_input the type of input data, 1 or 2, for 1 means single type, 2 means double'
-        exit 1
-    fi
+ #   if [[ $datatype -ne 1 && $datatype -ne 2 ]]; then
+ #       echo 'please re_input the type of input data, 1 or 2, for 1 means single type, 2 means double'
+ #       exit 1
+ #   fi
 
     if [[ -z $library_ID && $stage == "segment_find" ]]; then
         echo "please input the library_ID!!! --library_ID"
         exit 1
     fi
 
-    if [[ -z $nt_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
-        echo "please input the location of nt!!! --nt"
+ #   if [[ -z $nt_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
+ #       echo "please input the location of nt!!! --nt"
     #    exit 1
-    fi
+ #   fi
 
-    if [[ -z $nr_loc && $stage == "rdrp_find" ]]; then
-        echo "please input the location of nr!!! --nr"
-        exit 1
-    fi
+#    if [[ -z $nr_loc && $stage == "rdrp_find" ]]; then
+#        echo "please input the location of nr!!! --nr"
+#        exit 1
+#    fi
 
 #    if [[ -z $nt_noViruses_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
 #        echo "please input the location of nt_noViruses database!!! --nt_noViruses"
 #        exit 1
 #    fi
 
-    if [[ -z $taxidDB_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
-        echo "please input the location of prot.accession2taxid database!!! --taxidDB"
-        exit 1
-    fi
+#    if [[ -z $taxidDB_loc && ($stage == "rdrp_find" || $stage == "segment_find") ]]; then
+#        echo "please input the location of prot.accession2taxid database!!! --taxidDB"
+#        exit 1
+#    fi
 }
 
 # Call the validate_params function
