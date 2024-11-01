@@ -301,7 +301,7 @@ if [ $stage == "rdrp_find" ]; then
 	echo "----Finished RNA virus RdRP finding for $file----"
 
 	done;
-	echo "RdRP finding done. To run the next stage, use --stage virus_find"
+	echo "RdRP finding done. To run the next stage, use --stage segment_find"
 fi
 
 
