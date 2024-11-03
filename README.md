@@ -189,6 +189,40 @@ Required arguments:
  `--assemble`: the tool to assemble the raw reads, megahit or spades (default spades).  
  
  `--min_TPM`: if there exist the contig whose TPM is less than this value, the cluster it is in will be removed (default 200).  
+
+
+ ## Outputs
+processed_data:RNA virus RdRP files found in the library
+
+
+| processed_data  | Description |
+| ------------- | ------------- |
+| library_ID.megahit.fa.rdrp  | RdRP annotated document  |
+| library_ID.megahit.fa.rdrp.fasta | RdRP annotated fasta document  |
+
+library_ID file:Segmented virus search for documents
+network:
+| library_ID.final.confidence_table.xlsx  | Description |
+| ------------- | ------------- |
+| Frequency  | Frequency of sequence in different libraries  |
+| Contig_length  | sequence length  |
+| cutted  | Whether the sequence has been decontaminated  |
+| RdRP  | Whether or not it is RdRP  |
+| RdRP_blastx_hits  | sequence matching to species in RdRP database  |
+| RdRP_identity  | sequence matching to identity in RdRP database  |
+| nr_blastx_hits  | sequence matching to species in NR database  |
+| nr_identity  | sequence matching to identity in NR database  |
+| NR_sstart | sequence matching to start position in NR database  |
+| NR_send  | sequence matching to end position in NR database  |
+| nt_blast_hits  | sequence matching to species in NT database  |
+| nt_identity  | sequence matching to identity in NT database |
+| NT_sstart  | sequence matching to start position in NT database  |
+| NT_send | sequence matching to end position in NT database  |
+| TPM  | expression level  |
+| Cluster | Same segmented virus  |
+| Correlation  | * represents RdRP, and all segments in the same cluster were correlated with RdRP.  |
+
+megahit/rdrp is the output temporary file
  
 ## Cite this article
 Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: an automated tool for identifying RNA virus genome segments through co-occurrence in multiple sequenced samples. ----------; doi: -------------------  
