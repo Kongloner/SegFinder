@@ -134,9 +134,10 @@ Assuming all databases are stored in the `SegDB` folder in the current working d
 #### Step 1: Raw reads Quality Control and Assembly  
 ```shell
 ./SegFinder.sh  --indata testdata \
+                --assemble spades \
                 --stage preprocess       
 ```
-
+Note:Large amounts of data can be assembled using megahit, small amounts of data can be assembled using spades;
 #### Step 2: Discovery of RdRP for RNA viruses        
 ```shell
 ./SegFinder.sh  --stage rdrp_find \
@@ -149,7 +150,7 @@ Assuming all databases are stored in the `SegDB` folder in the current working d
 ./SegFinder.sh --stage segment_find \
                --nt Seg_DB/NT/nt \
                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --library_ID SRR7102799 
+               --library_ID SRR7102768
 ```
 Required arguments:     
  
