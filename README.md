@@ -220,7 +220,7 @@ network:
 | NT_send | sequence matching to end position in NT database  |
 | TPM  | expression level  |
 | Cluster | Same segmented virus  |
-| Correlation  | * represents RdRP, and all segments in the same cluster were correlated with RdRP.  |
+| Correlation  | * represents RdRP, and all segments in the same cluster were correlated with RdRP  |
 
 library_ID.pre.confidence_table.xlsx:Raw correlation table without thresholding
 
