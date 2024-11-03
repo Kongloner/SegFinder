@@ -192,15 +192,15 @@ Required arguments:
 
 
  ## Outputs
-processed_data:RNA virus RdRP files found in the library
-
+#### processed_data:RNA virus RdRP files found in the library
 
 | processed_data  | Description |
 | ------------- | ------------- |
 | library_ID.megahit.fa.rdrp  | RdRP annotated document  |
 | library_ID.megahit.fa.rdrp.fasta | RdRP annotated fasta document  |
 
-library_ID file:Segmented virus search for documents
+#### library_ID file:Segmented virus search for documents
+
 network:
 | library_ID.final.confidence_table.xlsx  | Description |
 | ------------- | ------------- |
@@ -221,6 +221,8 @@ network:
 | TPM  | expression level  |
 | Cluster | Same segmented virus  |
 | Correlation  | * represents RdRP, and all segments in the same cluster were correlated with RdRP.  |
+
+library_ID.pre.confidence_table.xlsx:Raw correlation table without thresholding
 
 megahit/rdrp is the output temporary file
  
