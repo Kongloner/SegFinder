@@ -192,14 +192,14 @@ Required arguments:
 
 
  ## Outputs
-#### processed_data:RNA virus RdRP files found in the library
+#### (1) processed_data:RNA virus RdRP files found in the library
 
 | processed_data  | Description |
 | ------------- | ------------- |
 | library_ID.megahit.fa.rdrp  | RdRP annotated document  |
 | library_ID.megahit.fa.rdrp.fasta | RdRP annotated fasta document  |
 
-#### library_ID file:Segmented virus search for documents
+#### (2) library_ID file:Segmented virus search for documents
 
 network:
 | library_ID.final.confidence_table.xlsx  | Description |
