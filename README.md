@@ -204,7 +204,7 @@ Required arguments:
 
 #### (2) `library_ID` Folder : Segmented Virus Search Results
 
-**Network Folder**
+**`Network` Folder**
 | file  | Description |
 | ------------- | ------------- |
 | library_ID.final.confidence_table.xlsx  | High-confidence segmented virus search results, with detailed annotations per sequence  |
