@@ -196,10 +196,10 @@ Required arguments:
 
 | processed_data  | Description |
 | ------------- | ------------- |
-| library_ID.megahit.fa.rdrp  | RdRP annotated document  |
-| library_ID.megahit.fa.rdrp.fasta | RdRP annotated fasta document  |
+| library_ID.megahit.fa.rdrp  | Annotated RdRP document in text format  |
+| library_ID.megahit.fa.rdrp.fasta | Annotated RdRP sequences in FASTA format  |
 
-#### (2) library_ID file:Segmented virus search for documents
+#### (2) `library_ID` Folder :Segmented Virus Search Results
 
 network:
 | library_ID.final.confidence_table.xlsx  | Description |
