@@ -136,9 +136,9 @@ Note: If you need to remove contamination from viral sequences, you can download
 Assuming all databases are stored in the `SegDB` folder in the current working directory. Of course, you can input the actual paths of these databases according to your specific situation.
 #### Step 1: Raw reads Quality Control and Assembly  
 ```shell
-./SegFinder.sh  --indata testdata \
-                --assemble spades \
-                --stage preprocess       
+./SegFinder.sh  --stage preprocess \
+                --indata testdata \
+                --assemble spades      
 ```
 Note:Large amounts of data can be assembled using megahit, small amounts of data can be assembled using spades;
 #### Step 2: Discovery of RdRP for RNA viruses        
