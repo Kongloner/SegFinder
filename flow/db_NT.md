@@ -1,4 +1,4 @@
-## NCBI Non-Redundant Nucleotide Database (NR)
+## NCBI Non-Redundant Nucleotide Database (NT)
 
 We use BLAST for nucleotide sequence alignment.
 
