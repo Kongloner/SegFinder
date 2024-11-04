@@ -207,6 +207,7 @@ Required arguments:
 **`Network` Folder**
 | file  | Description |
 | ------------- | ------------- |
+| library_ID.pre.confidence_table.xlsx  | Initial correlation table without filtering thresholds, providing raw data before high-confidence processing  |
 | library_ID.final.confidence_table.xlsx  | High-confidence segmented virus search results, with detailed annotations per sequence  |
 
 Columns in `library_ID.final.confidence_table.xlsx`
@@ -230,7 +231,6 @@ Columns in `library_ID.final.confidence_table.xlsx`
 | Cluster | Clustering information, indicating sequences grouped as part of the same segmented virus  |
 | Correlation  | Correlation with RdRP (* represents RdRP sequences). All segments within the same cluster correlate with the identified RdRP sequence  |
 
-- `library_ID.pre.confidence_table.xlsx`: Initial correlation table without filtering thresholds, providing raw data before high-confidence processing.
 
 **Temporary Files**  
 Intermediate files generated during analysis, located under `megahit/rdrp`
