@@ -201,7 +201,7 @@ Required arguments:
 
 #### (2) `library_ID` Folder :Segmented Virus Search Results
 
-###### Network Folder:
+###### **Network Folder**
 | library_ID.final.confidence_table.xlsx  | Description |
 | ------------- | ------------- |
 | Frequency  | Frequency of sequence in different libraries  |
