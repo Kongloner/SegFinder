@@ -195,7 +195,7 @@ Required arguments:
 
 
  ## Outputs
-#### (1) processed_data Folder: RNA virus RdRP files found in the library
+#### (1) `processed_data` Folder: RNA virus RdRP files found in the library
 
 | processed_data  | Description |
 | ------------- | ------------- |
