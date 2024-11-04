@@ -206,7 +206,7 @@ Required arguments:
 | ------------- | ------------- |
 | library_ID.final.confidence_table.xlsx  | High-confidence segmented virus search results, with detailed annotations per sequence  |
 
-**Columns in `library_ID.final.confidence_table.xlsx`**
+Columns in `library_ID.final.confidence_table.xlsx`
 | Column  | Description |
 | ------------- | ------------- |
 | Frequency  | Number of occurrences of each sequence across different libraries  |
