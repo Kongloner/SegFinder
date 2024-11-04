@@ -202,29 +202,35 @@ Required arguments:
 #### (2) `library_ID` Folder :Segmented Virus Search Results
 
 **Network Folder**
-| library_ID.final.confidence_table.xlsx  | Description |
+| file  | Description |
 | ------------- | ------------- |
-| Frequency  | Frequency of sequence in different libraries  |
-| Contig_length  | sequence length  |
-| cutted  | Whether the sequence has been decontaminated  |
-| RdRP  | Whether or not it is RdRP  |
-| RdRP_blastx_hits  | sequence matching to species in RdRP database  |
-| RdRP_identity  | sequence matching to identity in RdRP database  |
-| nr_blastx_hits  | sequence matching to species in NR database  |
-| nr_identity  | sequence matching to identity in NR database  |
-| NR_sstart | sequence matching to start position in NR database  |
-| NR_send  | sequence matching to end position in NR database  |
-| nt_blast_hits  | sequence matching to species in NT database  |
-| nt_identity  | sequence matching to identity in NT database |
-| NT_sstart  | sequence matching to start position in NT database  |
-| NT_send | sequence matching to end position in NT database  |
-| TPM  | expression level  |
-| Cluster | Same segmented virus  |
-| Correlation  | * represents RdRP, and all segments in the same cluster were correlated with RdRP  |
+| library_ID.final.confidence_table.xlsx  | High-confidence segmented virus search results, with detailed annotations per sequence  |
 
-library_ID.pre.confidence_table.xlsx:Raw correlation table without thresholding
+**Columns in `library_ID.final.confidence_table.xlsx`**
+| Column  | Description |
+| ------------- | ------------- |
+| Frequency  | Number of occurrences of each sequence across different libraries  |
+| Contig_length  | Length of each sequence (contig)  |
+| cutted  | Indicates if the sequence was decontaminated  |
+| RdRP  | Flags sequences identified as RdRP  |
+| RdRP_blastx_hits  | Matching species information from the RdRP database  |
+| RdRP_identity  | Identity match percentage in the RdRP database  |
+| nr_blastx_hits  | Matching species information from the NR database  |
+| nr_identity  | Identity match percentage in the NR database  |
+| NR_sstart | Start position of the NR database match  |
+| NR_send  | End position of the NR database match  |
+| nt_blast_hits  | Matching species information from the NT database  |
+| nt_identity  | Identity match percentage in the NT database |
+| NT_sstart  | Start position of the NT database match  |
+| NT_send | End position of the NT database match  |
+| TPM  | Expression level (Transcripts Per Million)  |
+| Cluster | Clustering information, indicating sequences grouped as part of the same segmented virus  |
+| Correlation  | Correlation with RdRP (* represents RdRP sequences). All segments within the same cluster correlate with the identified RdRP sequence  |
 
-megahit/rdrp is the output temporary file
+- `library_ID.pre.confidence_table.xlsx`: Initial correlation table without filtering thresholds, providing raw data before high-confidence processing.
+
+**Temporary Files**
+Intermediate files generated during analysis, located under `megahit/rdrp`
  
 ## Cite this article
 Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: an automated tool for identifying RNA virus genome segments through co-occurrence in multiple sequenced samples. ----------; doi: -------------------  
