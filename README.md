@@ -195,14 +195,14 @@ Required arguments:
 
 
  ## Outputs
-#### (1) processed_data:RNA virus RdRP files found in the library
+#### (1) processed_data Folder: RNA virus RdRP files found in the library
 
 | processed_data  | Description |
 | ------------- | ------------- |
 | library_ID.megahit.fa.rdrp  | Annotated RdRP document in text format  |
 | library_ID.megahit.fa.rdrp.fasta | Annotated RdRP sequences in FASTA format  |
 
-#### (2) `library_ID` Folder :Segmented Virus Search Results
+#### (2) `library_ID` Folder : Segmented Virus Search Results
 
 **Network Folder**
 | file  | Description |
