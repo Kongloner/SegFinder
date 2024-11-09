@@ -30,7 +30,7 @@ git clone https://github.com/Kongloner/SegFinder.git
 chmod +x SegFinder/SegFinder.sh
 ```
 ### **⚙️ Using the Singularity Image to Install Dependencies (Optional)**
-To simplify the setup process, we have prepared a **pre-built Singularity image** that includes the complete runtime environment required to execute the entire workflow. Users can utilize this image directly without the need to manually install complex dependencies, effectively allowing you to **skip steps 2 and 3** below.
+To simplify the setup process, we have prepared a **pre-built Singularity image (3.5.X)** that includes the complete runtime environment required to execute the entire workflow. Users can utilize this image directly without the need to manually install complex dependencies, effectively allowing you to **skip steps 2 and 3** below.
 
 To pull and use the Singularity image, run the following commands:
 ```shell
