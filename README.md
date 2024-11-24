@@ -192,7 +192,8 @@ Required arguments:
  `--assemble`: the tool to assemble the raw reads, megahit or spades (default spades).  
  
  `--min_TPM`: if there exist the contig whose TPM is less than this value, the cluster it is in will be removed (default 200).  
-
+ 
+ `--incontig`: the sequence ID of the rdrp you want to look up (equivalent to the library_ID). 
 
  ## Outputs
 #### (1) `processed_data` Folder: RNA virus RdRP files found in the library
