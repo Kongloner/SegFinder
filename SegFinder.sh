@@ -496,7 +496,7 @@ if [ $stage == "segment_find" ]; then
 	blastn -query $megahit/"${library_ID}".re.fasta -db $nt_loc -out $megahit/"${library_ID}"_megahit_assemble_re_nt.tsv -evalue 1E-3 -outfmt "6 qseqid qlen sacc salltitles pident length evalue sstart send" -max_target_seqs 5 -num_threads ${thread}
 
 	run_command diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db $megahit/RdRP_only -p ${thread}
-	diamond blastx -q ${present_loc}/rdrp/${library_ID}.rdrp.fasta -d $megahit/RdRP_only -o $megahit/${library_ID}.megahit.fa.rdrp.tsv --more-sensitive -e 1E-3 -k 5 -p ${thread} -f 6 qseqid qlen sseqid stitle pident length evalue sstart send
+	diamond blastx -q ${present_loc}/$rdrp/${library_ID}.rdrp.fasta -d $megahit/RdRP_only -o $megahit/${library_ID}.megahit.fa.rdrp.tsv --more-sensitive -e 1E-3 -k 5 -p ${thread} -f 6 qseqid qlen sseqid stitle pident length evalue sstart send
 
 	cp $nr/${library_ID}_megahit_assemble_nr $megahit/${library_ID}_megahit_assemble_nr.tsv
 	sed -i "s/#/_/" $megahit/"${library_ID}"_megahit_assemble_re_nt.tsv
