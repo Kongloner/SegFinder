@@ -109,7 +109,8 @@ for (pkg in bioconductor.packages) {
 The databases require substantial disk space, so please ensure sufficient storage is available before proceeding. If you already have these databases, you may skip the download step and proceed directly to configuration. For those who need to download the databases, note that the speed will depend on your internet connection. To enhance efficiency, you may also consider using alternative methods, such as the Aspera (ascp) protocol.
 
 ```shell
-# cd the folder named `Seg_DB` in the working directory for storing these databases
+# create the folder named `Seg_DB` in the working directory to store these databases
+mkdir -p Seg_DB
 cd Seg_DB
 ```
 
@@ -125,15 +126,15 @@ md5sum -c prot.accession2taxid.gz.md5
 #Unzip the files
 gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ```
-#### 2) taxonkit_db
+#### 2) taxonkit_db (The built-in local database provided by TaxonKit)
 ```shell
 #Download the `taxdump.tar.gz` file
 wget -c https://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz 
 tar -zxvf taxdump.tar.gz
 
-cp names.dmp nodes.dmp delnodes.dmp merged.dmp /path/to/your/destination
+mkdir -p taxonkit_db
+mv names.dmp nodes.dmp delnodes.dmp merged.dmp taxonkit_db
 ```
-Note: The built-in local database provided by TaxonKit has already been downloaded and stored in the `Seg_DB/taxonkit_db` folder.  If needed, you can manually download the latest data and save it to your specified location.
 
 #### 3) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
 #### 4) [NCBI Non-Redundant Nucleotide Database (NT)](./flow/db_NT.md)
