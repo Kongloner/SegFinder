@@ -15,18 +15,18 @@
     fi
  }
 
-
 # Usage function to display help message
 usage(){
 cat <<'EOF'
 Usage
- [--stage]... specify the stage of the pipeline to run: preprocess, rdrp_find, or segment_find; default preprocess
- [-o]... the directory to output the results; default ./
- [--indata]... the location of the raw data
- [--incontig]... the contig you want to search
- [--thread]... default 10
- [--cor]... correlation coefficient; default 0.8
+ [--stage]... specify the stage of the pipeline to run: preprocess, rdrp_find, or segment_find
+ [-o]... the directory to output the results (default: current directory)
+ [--indata]... the location of the raw data (in 'fq.gz' format)
+ [--incontig]... the sequence ID of the rdrp you want to look up (equivalent to the library_ID)
+ [--thread]... the number of threads (default: 10)
+ [--cor]... correlation coefficient (default: 0.8)
  [--nt_noViruses]... the location of nt_noViruses database, used to remove viral sequence contamination, optional
+<<<<<<< Updated upstream
  [--nt]... the location of nt database
  [--nr]... the location of nr database
  [--method]... the method to quantify the transcript abundances,salmon or RSEM,default salmon
@@ -38,6 +38,20 @@ Usage
  [--library_ID]... the library you want to search, can input multiple IDs separated by spaces
  [--assemble]... tthe tool to assemble the raw reads, megahit or spades; default spades
  [--min_TPM]... if there exist the contig whose TPM is less than this value, the cluster it is in will be removed; default 200
+=======
+ [--taxonkit_db]... the location of the built-in local database provided by TaxonKit for queries and annotations of NCBI taxonomy data (default Seg_DB/taxonkit_db)
+ [--nt]... the location of nt database.(Use the absolute path to specify the location of the database (default: Seg_DB/NT/nt)
+ [--nr]... the location of nr database.(Use the absolute path to specify the location of the database (default: Seg_DB/NR/nr)
+ [--method]... the method to quantify the transcript abundances,salmon or RSEM (default salmon)
+ [--datatype]... specifies the type of input sequencing data, either single-end (1) or paired-end (2) reads (default: 2)
+ [--taxidDB]... the location of prot.accession2taxid database.(Use the absolute path to specify the location of the database (default: Seg_DB/accession2taxid/prot.accession2taxid)
+ [--rm_length]... the contigs whose length less than this value will be removed (default 600)
+ [--min_rdrp_multi]... minimum length of rdrp and their re-assembled contigs to be retained (default 100)
+ [--min_nordrp_multi]... minimum length of non-rdrp and their re-assembled contigs to be retained (default 20)
+ [--library_ID]... the library you want to search for segmented viruses, can input multiple IDs separated by spaces
+ [--assemble]... the tool to assemble the raw reads, megahit or spades (default spades)
+ [--min_TPM]... if there exist the contig whose TPM is less than this value, the cluster it is in will be removed (default 200)
+>>>>>>> Stashed changes
  [--help]... display this help message
  [--version]... display version information
 EOF
@@ -57,10 +71,11 @@ assemble_method="spades"
 nt_loc="Seg_DB/NT/nt"
 nr_loc="Seg_DB/NR/nr"
 taxidDB_loc="Seg_DB/accession2taxid/prot.accession2taxid"
+TAXONKIT_DB=“Seg_DB/taxonkit_db”
 
 
 # Parse command-line arguments
-parameters=$(getopt -o o: --long indata:,incontig:,thread:,cor:,datatype:,nt:,nr:,method:,stage:,min_multi:,min_TPM:,assemble:,library_ID:,rm_length:,nt_noViruses:,taxidDB:,help,version -n "$0" -- "$@")
+parameters=$(getopt -o o: --long indata:,incontig:,thread:,cor:,datatype:,nt:,nr:,method:,stage:,min_multi:,min_TPM:,assemble:,library_ID:,rm_length:,taxonkit_db:,nt_noViruses:,taxidDB:,help,version -n "$0" -- "$@")
 if [ $? -ne 0 ]; then echo "Try '$0 --help' for more information."; exit 1; fi
 
 eval set -- "$parameters"
@@ -84,6 +99,7 @@ while true; do
         --assemble) assemble_method=$2; shift 2;;
         --stage) stage=$2; shift 2;;
         --taxidDB) taxidDB_loc=$2; shift 2;;
+		--taxonkit_db) TAXONKIT_DB=$2; shift 2;;
         -o) out_loc=$2; shift 2;;
         --version) echo "$0 version V1.0"; exit;;
         --help) usage; exit;;
@@ -236,31 +252,62 @@ if [ $stage == "rdrp_find" ]; then
        sed -i "s/#/_/" ${file}_megahit_assemble_nr
        cat ${file}_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > ${file}_accession_list.txt.nr
        grep -F -f ${file}_accession_list.txt.nr $taxidDB_loc > ${file}.taxid_table.txt.nr
-       cat  ${file}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${file}.taxid_list.txt.nr
-       python3 ${present_loc}/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${file}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${file}.lineage_table.txt.nr
-       cat sqlite_table/sqlite_template.nr | sed "s/template/"${file}"/g" > sqlite_${file}.nr
-       sqlite3 sqlite_${file}.nr.summary.sql < sqlite_${file}.nr
-       mv ${file}_megahit_assemble_nr.edited ${file}_megahit_assemble_nr.edited.tsv
-       rm -rf sqlite_table
-       rm -rf ${file}.taxid_table.txt.nr ${file}.taxid_list.txt.nr ${file}.lineage_table.txt.nr ${file}.accession_list.txt.nr
-       rm -rf sqlite_${file}.nr
-       rm -rf sqlite_${file}.nr.summary.sql
+      # cat  ${file}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${file}.taxid_list.txt.nr
+      # python3 ${present_loc}/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${file}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${file}.lineage_table.txt.nr
+      # cat sqlite_table/sqlite_template.nr | sed "s/template/"${file}"/g" > sqlite_${file}.nr
+      # sqlite3 sqlite_${file}.nr.summary.sql < sqlite_${file}.nr
+      # mv ${file}_megahit_assemble_nr.edited ${file}_megahit_assemble_nr.edited.tsv
+	  cut -f3 "$file".taxid_table.txt.nr | sort -u | taxonkit --data-dir "$TAXONKIT_DB" lineage \
+    | awk '$2 > 0' > "diamond_nr_taxonomy_temp.tsv"
 
-	   grep -i "virus" ${file}_megahit_assemble_nr.edited.tsv > ${file}_assemble_nr.virus
-	   cat ${file}_assemble_nr.virus | cut -f2 | sort -u > ${file}_assemble_nr.virus.list
-	   seqtk subseq ${file}.megahit.fa ${file}_assemble_nr.virus.list > ${file}_assemble_nr.virus.match
-	   run_command diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db RdRP_only -p ${thread}
-	   diamond  blastx \
-		     --more-sensitive \
-			 -q ${file}_assemble_nr.virus.match \
-			 -d RdRP_only \
-			 -o ${file}_assemble_nr.rdrp \
-			 -e 1E-3 \
-			 -k 1 \
-             -p ${thread} \
-             -f 6 qseqid qlen sseqid stitle pident length evalue qstart qend
-	   cat ${file}_assemble_nr.rdrp | cut -f1 | sort -u > ${file}_assemble_nr.rdrp.list
-	   seqtk subseq ${file}_assemble_nr.virus.match ${file}_assemble_nr.rdrp.list > ${file}.rdrp.virus.match
+	taxonkit --data-dir "$TAXONKIT_DB" reformat -f "{k}\t{p}\t{c}\t{o}\t{f}\t{g}\t{s}" -F "diamond_nr_taxonomy_temp.tsv" \
+    -o "diamond_nr_taxonomy_temp_2.tsv"
+
+	cut -f1,3- "diamond_nr_taxonomy_temp_2.tsv" > "diamond_nr_taxonomy.tsv"
+	awk -F'\t' '{
+		first_col = $1;  
+		merged_col = $2;  
+		for (i = 3; i <= NF; i++) {  
+			merged_col = merged_col "|" $i;  
+		}
+		print first_col "\t" merged_col;  
+	}' OFS='\t' diamond_nr_taxonomy.tsv > temp_file && mv temp_file diamond_nr_taxonomy.tsv
+
+
+	# Step 2: Merge taxon information
+	echo "Merging taxon information..."
+
+	awk 'BEGIN {FS="\t"; OFS="\t"} NR==FNR{a[$2]=$3; next} $3 in a{print $0, a[$3]}' ""$file".taxid_table.txt.nr" ""$file".megahit.fa.nr" > "blastp_raw2taxid.tsv"
+
+	awk '
+	BEGIN { FS=OFS="\t" } 
+	NR==FNR { gsub(/[ \t]+$/, "", $2); taxonomy[$1]=$2; next } 
+	{
+		if ($NF in taxonomy) { 
+			$NF=taxonomy[$NF]
+		} else { 
+			$NF="NA"
+		} 
+		print 
+	}' diamond_nr_taxonomy.tsv  blastp_raw2taxid.tsv > ${file}_megahit_assemble_nr.edited.tsv
+
+	rm -rf ${file}.taxid_table.txt.nr  diamond_nr_taxonomy.tsv blastp_raw2taxid.tsv ${file}.accession_list.txt.nr diamond_nr_taxonomy_temp*
+
+	grep -i "virus" ${file}_megahit_assemble_nr.edited.tsv > ${file}_assemble_nr.virus
+	cat ${file}_assemble_nr.virus | cut -f2 | sort -u > ${file}_assemble_nr.virus.list
+	seqtk subseq ${file}.megahit.fa ${file}_assemble_nr.virus.list > ${file}_assemble_nr.virus.match
+	run_command diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db RdRP_only -p ${thread}
+	diamond  blastx \
+			--more-sensitive \
+			-q ${file}_assemble_nr.virus.match \
+			-d RdRP_only \
+			-o ${file}_assemble_nr.rdrp \
+			-e 1E-3 \
+			-k 1 \
+			-p ${thread} \
+			-f 6 qseqid qlen sseqid stitle pident length evalue qstart qend
+	cat ${file}_assemble_nr.rdrp | cut -f1 | sort -u > ${file}_assemble_nr.rdrp.list
+	seqtk subseq ${file}_assemble_nr.virus.match ${file}_assemble_nr.rdrp.list > ${file}.rdrp.virus.match
 
 	cd ${present_loc}
 
@@ -349,16 +396,60 @@ if [ $stage == "segment_find" ]; then
 
 		cd ${nr}
 	    cat ${library_ID}_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > ${library_ID}_accession_list.txt.nr
+<<<<<<< Updated upstream
 		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc > ${library_ID}.taxid_table.txt.nr
 		cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
 		python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${library_ID}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${library_ID}.lineage_table.txt.nr
 		cat sqlite_table/sqlite_template.nr | sed "s/template/"${library_ID}"/g" > sqlite_${library_ID}.nr
 		sqlite3 sqlite_${library_ID}.nr.summary.sql < sqlite_${library_ID}.nr
 		mv ${library_ID}_megahit_assemble_nr.edited ${library_ID}_megahit_assemble_nr.edited.tsv
+=======
+		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > ${library_ID}.taxid_table.txt.nr
+	#	cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
+	#	python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${library_ID}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${library_ID}.lineage_table.txt.nr
+	#	cat sqlite_table/sqlite_template.nr | sed "s/template/"${library_ID}"/g" > sqlite_${library_ID}.nr
+	#	sqlite3 sqlite_${library_ID}.nr.summary.sql < sqlite_${library_ID}.nr
+	#	mv ${library_ID}_megahit_assemble_nr.edited ${library_ID}_megahit_assemble_nr.edited.tsv
+		cut -f3 "$library_ID".taxid_table.txt.nr | sort -u | taxonkit --data-dir "$TAXONKIT_DB" lineage \
+			| awk '$2 > 0' > "diamond_nr_taxonomy_temp.tsv"
+
+		taxonkit --data-dir "$TAXONKIT_DB" reformat -f "{k}\t{p}\t{c}\t{o}\t{f}\t{g}\t{s}" -F "diamond_nr_taxonomy_temp.tsv" \
+			-o "diamond_nr_taxonomy_temp_2.tsv"
+
+		cut -f1,3- "diamond_nr_taxonomy_temp_2.tsv" > "diamond_nr_taxonomy.tsv"
+		awk -F'\t' '{
+			first_col = $1;  
+			merged_col = $2;  
+			for (i = 3; i <= NF; i++) {  
+				merged_col = merged_col "|" $i;  
+			}
+			print first_col "\t" merged_col;  
+		}' OFS='\t' diamond_nr_taxonomy.tsv > temp_file && mv temp_file diamond_nr_taxonomy.tsv
+
+
+		# Step 2: Merge taxon information
+		echo "Merging taxon information..."
+
+		awk 'BEGIN {FS="\t"; OFS="\t"} NR==FNR{a[$2]=$3; next} $3 in a{print $0, a[$3]}' ""$library_ID".taxid_table.txt.nr" ""$library_ID".megahit.fa.nr" > "blastp_raw2taxid.tsv"
+
+		awk '
+		BEGIN { FS=OFS="\t" } 
+		NR==FNR { gsub(/[ \t]+$/, "", $2); taxonomy[$1]=$2; next } 
+		{
+			if ($NF in taxonomy) { 
+				$NF=taxonomy[$NF]
+			} else { 
+				$NF="NA"
+			} 
+			print 
+		}' diamond_nr_taxonomy.tsv  blastp_raw2taxid.tsv > ${library_ID}_megahit_assemble_nr.edited.tsv
+
+		rm -rf ${library_ID}.taxid_table.txt.nr  diamond_nr_taxonomy.tsv blastp_raw2taxid.tsv ${library_ID}.accession_list.txt.nr diamond_nr_taxonomy_temp*
+
+
+>>>>>>> Stashed changes
 		cp ${library_ID}_megahit_assemble_nr.edited.tsv $megahit/${library_ID}_megahit_assemble_nr.edited.tsv
-		rm -rf sqlite_${library_ID}.nr
-		rm -rf sqlite_${library_ID}.nr.summary.sql
-		rm -rf ${library_ID}.taxid_table.txt.nr $/nr/${library_ID}.taxid_list.txt.nr ${library_ID}.lineage_table.txt.nr ${library_ID}.accession_list.txt.nr
+	#	rm -rf ${library_ID}.taxid_table.txt.nr $/nr/${library_ID}.taxid_list.txt.nr ${library_ID}.lineage_table.txt.nr ${library_ID}.accession_list.txt.nr
 		
 		sed -i "s/\#/_/g" ${library_ID}_megahit_assemble_nr.edited.tsv
 		cp ${library_ID}_megahit_assemble_nr.edited.tsv $megahit/${library_ID}_megahit_assemble_nr.edited.tsv
