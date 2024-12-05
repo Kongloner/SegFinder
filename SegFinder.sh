@@ -26,7 +26,6 @@ Usage
  [--thread]... the number of threads (default: 10)
  [--cor]... correlation coefficient (default: 0.8)
  [--nt_noViruses]... the location of nt_noViruses database, used to remove viral sequence contamination, optional
-<<<<<<< Updated upstream
  [--nt]... the location of nt database
  [--nr]... the location of nr database
  [--method]... the method to quantify the transcript abundances,salmon or RSEM,default salmon
@@ -38,7 +37,6 @@ Usage
  [--library_ID]... the library you want to search, can input multiple IDs separated by spaces
  [--assemble]... tthe tool to assemble the raw reads, megahit or spades; default spades
  [--min_TPM]... if there exist the contig whose TPM is less than this value, the cluster it is in will be removed; default 200
-=======
  [--taxonkit_db]... the location of the built-in local database provided by TaxonKit for queries and annotations of NCBI taxonomy data (default Seg_DB/taxonkit_db)
  [--nt]... the location of nt database.(Use the absolute path to specify the location of the database (default: Seg_DB/NT/nt)
  [--nr]... the location of nr database.(Use the absolute path to specify the location of the database (default: Seg_DB/NR/nr)
@@ -257,11 +255,9 @@ if [ $stage == "rdrp_find" ]; then
       # cat sqlite_table/sqlite_template.nr | sed "s/template/"${file}"/g" > sqlite_${file}.nr
       # sqlite3 sqlite_${file}.nr.summary.sql < sqlite_${file}.nr
       # mv ${file}_megahit_assemble_nr.edited ${file}_megahit_assemble_nr.edited.tsv
-	  cut -f3 "$file".taxid_table.txt.nr | sort -u | taxonkit --data-dir "$TAXONKIT_DB" lineage \
-    | awk '$2 > 0' > "diamond_nr_taxonomy_temp.tsv"
+	  cut -f3 "$file".taxid_table.txt.nr | sort -u | taxonkit --data-dir "$TAXONKIT_DB" lineage | awk '$2 > 0' > "diamond_nr_taxonomy_temp.tsv"
 
-	taxonkit --data-dir "$TAXONKIT_DB" reformat -f "{k}\t{p}\t{c}\t{o}\t{f}\t{g}\t{s}" -F "diamond_nr_taxonomy_temp.tsv" \
-    -o "diamond_nr_taxonomy_temp_2.tsv"
+	taxonkit --data-dir "$TAXONKIT_DB" reformat -f "{k}\t{p}\t{c}\t{o}\t{f}\t{g}\t{s}" -F "diamond_nr_taxonomy_temp.tsv"  -o "diamond_nr_taxonomy_temp_2.tsv"
 
 	cut -f1,3- "diamond_nr_taxonomy_temp_2.tsv" > "diamond_nr_taxonomy.tsv"
 	awk -F'\t' '{
@@ -396,25 +392,23 @@ if [ $stage == "segment_find" ]; then
 
 		cd ${nr}
 	    cat ${library_ID}_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > ${library_ID}_accession_list.txt.nr
-<<<<<<< Updated upstream
+
 		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc > ${library_ID}.taxid_table.txt.nr
 		cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
 		python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${library_ID}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${library_ID}.lineage_table.txt.nr
 		cat sqlite_table/sqlite_template.nr | sed "s/template/"${library_ID}"/g" > sqlite_${library_ID}.nr
 		sqlite3 sqlite_${library_ID}.nr.summary.sql < sqlite_${library_ID}.nr
 		mv ${library_ID}_megahit_assemble_nr.edited ${library_ID}_megahit_assemble_nr.edited.tsv
-=======
+
 		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > ${library_ID}.taxid_table.txt.nr
 	#	cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
 	#	python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${library_ID}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${library_ID}.lineage_table.txt.nr
 	#	cat sqlite_table/sqlite_template.nr | sed "s/template/"${library_ID}"/g" > sqlite_${library_ID}.nr
 	#	sqlite3 sqlite_${library_ID}.nr.summary.sql < sqlite_${library_ID}.nr
 	#	mv ${library_ID}_megahit_assemble_nr.edited ${library_ID}_megahit_assemble_nr.edited.tsv
-		cut -f3 "$library_ID".taxid_table.txt.nr | sort -u | taxonkit --data-dir "$TAXONKIT_DB" lineage \
-			| awk '$2 > 0' > "diamond_nr_taxonomy_temp.tsv"
+		cut -f3 "$library_ID".taxid_table.txt.nr | sort -u | taxonkit --data-dir "$TAXONKIT_DB" lineage | awk '$2 > 0' > "diamond_nr_taxonomy_temp.tsv"
 
-		taxonkit --data-dir "$TAXONKIT_DB" reformat -f "{k}\t{p}\t{c}\t{o}\t{f}\t{g}\t{s}" -F "diamond_nr_taxonomy_temp.tsv" \
-			-o "diamond_nr_taxonomy_temp_2.tsv"
+		taxonkit --data-dir "$TAXONKIT_DB" reformat -f "{k}\t{p}\t{c}\t{o}\t{f}\t{g}\t{s}" -F "diamond_nr_taxonomy_temp.tsv"  -o "diamond_nr_taxonomy_temp_2.tsv"
 
 		cut -f1,3- "diamond_nr_taxonomy_temp_2.tsv" > "diamond_nr_taxonomy.tsv"
 		awk -F'\t' '{
