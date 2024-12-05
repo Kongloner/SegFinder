@@ -49,7 +49,6 @@ Usage
  [--library_ID]... the library you want to search for segmented viruses, can input multiple IDs separated by spaces
  [--assemble]... the tool to assemble the raw reads, megahit or spades (default spades)
  [--min_TPM]... if there exist the contig whose TPM is less than this value, the cluster it is in will be removed (default 200)
->>>>>>> Stashed changes
  [--help]... display this help message
  [--version]... display version information
 EOF
@@ -97,7 +96,7 @@ while true; do
         --assemble) assemble_method=$2; shift 2;;
         --stage) stage=$2; shift 2;;
         --taxidDB) taxidDB_loc=$2; shift 2;;
-		--taxonkit_db) TAXONKIT_DB=$2; shift 2;;
+	--taxonkit_db) TAXONKIT_DB=$2; shift 2;;
         -o) out_loc=$2; shift 2;;
         --version) echo "$0 version V1.0"; exit;;
         --help) usage; exit;;
@@ -235,8 +234,8 @@ if [ $stage == "rdrp_find" ]; then
 	for file in "${result_files[@]}";
 	do
         echo "----Starting RNA virus RdRP finding for $file----"
-		run_command cd ${processed_data}
-	    run_command diamond blastx \
+	run_command cd ${processed_data}
+	run_command diamond blastx \
 			   -q ${file}.megahit.fa \
 			   -d ${nr_loc} \
 			   -o ${file}_assemble_nr \
@@ -255,7 +254,7 @@ if [ $stage == "rdrp_find" ]; then
       # cat sqlite_table/sqlite_template.nr | sed "s/template/"${file}"/g" > sqlite_${file}.nr
       # sqlite3 sqlite_${file}.nr.summary.sql < sqlite_${file}.nr
       # mv ${file}_megahit_assemble_nr.edited ${file}_megahit_assemble_nr.edited.tsv
-	  cut -f3 "$file".taxid_table.txt.nr | sort -u | taxonkit --data-dir "$TAXONKIT_DB" lineage | awk '$2 > 0' > "diamond_nr_taxonomy_temp.tsv"
+        cut -f3 "$file".taxid_table.txt.nr | sort -u | taxonkit --data-dir "$TAXONKIT_DB" lineage | awk '$2 > 0' > "diamond_nr_taxonomy_temp.tsv"
 
 	taxonkit --data-dir "$TAXONKIT_DB" reformat -f "{k}\t{p}\t{c}\t{o}\t{f}\t{g}\t{s}" -F "diamond_nr_taxonomy_temp.tsv"  -o "diamond_nr_taxonomy_temp_2.tsv"
 
@@ -383,22 +382,22 @@ if [ $stage == "segment_find" ]; then
 	for library_ID in "${library_IDs[@]}";
 	 do
 	    echo "----Starting Segmented RNA virus finding for library: $library_ID----"
-	 	mkdir -p "$megahit" "$nr" "$rdrp" "$network" 
+	    mkdir -p "$megahit" "$nr" "$rdrp" "$network" 
 
-		run_command cp ${processed_data}/${library_ID}.megahit.fa  ${megahit}/${library_ID}.megahit.fa
-		run_command cp ${processed_data}/${library_ID}.megahit.fa.rdrp.fasta  ${rdrp}/${library_ID}.megahit.fa.megahit.rdrp.virus.match
-	 	run_command cp -rf  ${present_loc}/data/sqlite_table $nr
-		run_command cp ${processed_data}/${library_ID}.megahit.fa.nr $nr/${library_ID}_megahit_assemble_nr
+	    run_command cp ${processed_data}/${library_ID}.megahit.fa  ${megahit}/${library_ID}.megahit.fa
+	    run_command cp ${processed_data}/${library_ID}.megahit.fa.rdrp.fasta  ${rdrp}/${library_ID}.megahit.fa.megahit.rdrp.virus.match
+	    run_command cp -rf  ${present_loc}/data/sqlite_table $nr
+	    run_command cp ${processed_data}/${library_ID}.megahit.fa.nr $nr/${library_ID}_megahit_assemble_nr
 
-		cd ${nr}
+	    cd ${nr}
 	    cat ${library_ID}_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > ${library_ID}_accession_list.txt.nr
 
-		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc > ${library_ID}.taxid_table.txt.nr
-		cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
-		python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${library_ID}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${library_ID}.lineage_table.txt.nr
-		cat sqlite_table/sqlite_template.nr | sed "s/template/"${library_ID}"/g" > sqlite_${library_ID}.nr
-		sqlite3 sqlite_${library_ID}.nr.summary.sql < sqlite_${library_ID}.nr
-		mv ${library_ID}_megahit_assemble_nr.edited ${library_ID}_megahit_assemble_nr.edited.tsv
+	    grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc > ${library_ID}.taxid_table.txt.nr
+	    cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
+	    python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${library_ID}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${library_ID}.lineage_table.txt.nr
+	    cat sqlite_table/sqlite_template.nr | sed "s/template/"${library_ID}"/g" > sqlite_${library_ID}.nr
+	    sqlite3 sqlite_${library_ID}.nr.summary.sql < sqlite_${library_ID}.nr
+	    mv ${library_ID}_megahit_assemble_nr.edited ${library_ID}_megahit_assemble_nr.edited.tsv
 
 		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > ${library_ID}.taxid_table.txt.nr
 	#	cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
@@ -441,7 +440,6 @@ if [ $stage == "segment_find" ]; then
 		rm -rf ${library_ID}.taxid_table.txt.nr  diamond_nr_taxonomy.tsv blastp_raw2taxid.tsv ${library_ID}.accession_list.txt.nr diamond_nr_taxonomy_temp*
 
 
->>>>>>> Stashed changes
 		cp ${library_ID}_megahit_assemble_nr.edited.tsv $megahit/${library_ID}_megahit_assemble_nr.edited.tsv
 	#	rm -rf ${library_ID}.taxid_table.txt.nr $/nr/${library_ID}.taxid_list.txt.nr ${library_ID}.lineage_table.txt.nr ${library_ID}.accession_list.txt.nr
 		
