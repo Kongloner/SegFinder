@@ -126,6 +126,7 @@ md5sum -c prot.accession2taxid.gz.md5
 #Unzip the files
 gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ```
+
 #### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
 #### 3) [NCBI Non-Redundant Nucleotide Database (NT)](./flow/db_NT.md)
 #### 4) [Virus-free Non-Redundant Nucleotide Database (Virus-free NT)](./flow/db_nt_noViruses.md)
@@ -145,7 +146,8 @@ Note:Large amounts of data can be assembled using megahit, small amounts of data
 ```shell
 ./SegFinder.sh  --stage rdrp_find \
                 --nr Seg_DB/NR/nr \
-                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid
+                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
+                --taxonkit_db Seg_DB/taxonkit_db
 ```
 Note:The NR database is indexed using DIAMOND, while the NT database is indexed using makeblastdb.  
 #### Step 3: Segmented RNA virus finder        
@@ -153,6 +155,7 @@ Note:The NR database is indexed using DIAMOND, while the NT database is indexed 
 ./SegFinder.sh --stage segment_find \
                --nt Seg_DB/NT/nt \
                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
+               --taxonkit_db Seg_DB/taxonkit_db \
                --library_ID SRR7102768
 ```
 Required arguments:     
@@ -173,13 +176,15 @@ Required arguments:
  
  `--cor`: correlation coefficient (default: 0.8).  
  
+  `--method`: the method to quantify the transcript abundances,salmon or RSEM (default salmon). 
+ 
  `--nt_noViruses`: the location of nt_noViruses database, used to remove viral sequence contamination, optional.  
  
  `--nt`: the location of nt database.(Use the absolute path to specify the location of the database (default: Seg_DB/NT/nt).
  
  `--nr`: the location of nr database.(Use the absolute path to specify the location of the database (default: Seg_DB/NR/nr). 
  
- `--method`: the method to quantify the transcript abundances,salmon or RSEM (default salmon).    
+ `--taxonkit`:the location of the built-in local database provided by TaxonKit for queries and annotations of NCBI taxonomy data (default Seg_DB/taxonkit_db).   
  
  `--taxidDB`: the location of prot.accession2taxid database.(Use the absolute path to specify the location of the database (default: Seg_DB/accession2taxid/prot.accession2taxid).  
  
@@ -193,7 +198,6 @@ Required arguments:
  
  `--min_TPM`: if there exist the contig whose TPM is less than this value, the cluster it is in will be removed (default 200).  
  
- `--incontig`: the sequence ID of the rdrp you want to look up (equivalent to the library_ID). 
 
  ## Outputs
 #### (1) `processed_data` Folder: RNA virus RdRP files found in the library
