@@ -58,9 +58,11 @@ sh Anaconda3-2022.05-Linux-x86_64.sh
 ```
 ```shell
 source ~/.bashrc
+# conda update -n base -c defaults conda --repodata-fn=repodata.json
 # conda config --add channels conda-forge
 # conda config --add channels bioconda
 # conda config --add channels defaults
+
 ```
 #### 3) Create a virtual environment: python=3.9.13
 ```shell
