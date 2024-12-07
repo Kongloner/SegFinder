@@ -392,12 +392,7 @@ if [ $stage == "segment_find" ]; then
 	    cd ${nr}
 	    cat ${library_ID}_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > ${library_ID}_accession_list.txt.nr
 
-	    grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc > ${library_ID}.taxid_table.txt.nr
-	    cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
-	    python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${library_ID}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${library_ID}.lineage_table.txt.nr
-	    cat sqlite_table/sqlite_template.nr | sed "s/template/"${library_ID}"/g" > sqlite_${library_ID}.nr
-	    sqlite3 sqlite_${library_ID}.nr.summary.sql < sqlite_${library_ID}.nr
-	    mv ${library_ID}_megahit_assemble_nr.edited ${library_ID}_megahit_assemble_nr.edited.tsv
+	  
 
 		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc > ${library_ID}.taxid_table.txt.nr
 	#	cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
@@ -423,7 +418,7 @@ if [ $stage == "segment_find" ]; then
 		# Step 2: Merge taxon information
 		echo "Merging taxon information..."
 
-		awk 'BEGIN {FS="\t"; OFS="\t"} NR==FNR{a[$2]=$3; next} $3 in a{print $0, a[$3]}' ""$library_ID".taxid_table.txt.nr" ""$library_ID".megahit.fa.nr" > "blastp_raw2taxid.tsv"
+		awk 'BEGIN {FS="\t"; OFS="\t"} NR==FNR{a[$2]=$3; next} $3 in a{print $0, a[$3]}' ""$library_ID".taxid_table.txt.nr" ""$library_ID"_megahit_assemble_nr" > "blastp_raw2taxid.tsv"
 
 		awk '
 		BEGIN { FS=OFS="\t" } 
