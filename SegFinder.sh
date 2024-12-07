@@ -399,7 +399,7 @@ if [ $stage == "segment_find" ]; then
 	    sqlite3 sqlite_${library_ID}.nr.summary.sql < sqlite_${library_ID}.nr
 	    mv ${library_ID}_megahit_assemble_nr.edited ${library_ID}_megahit_assemble_nr.edited.tsv
 
-		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc/prot.accession2taxid > ${library_ID}.taxid_table.txt.nr
+		grep -F -f ${library_ID}_accession_list.txt.nr $taxidDB_loc > ${library_ID}.taxid_table.txt.nr
 	#	cat  ${library_ID}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${library_ID}.taxid_list.txt.nr
 	#	python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${library_ID}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${library_ID}.lineage_table.txt.nr
 	#	cat sqlite_table/sqlite_template.nr | sed "s/template/"${library_ID}"/g" > sqlite_${library_ID}.nr
