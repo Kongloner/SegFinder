@@ -68,7 +68,7 @@ assemble_method="spades"
 nt_loc="Seg_DB/NT/nt"
 nr_loc="Seg_DB/NR/nr"
 taxidDB_loc="Seg_DB/accession2taxid/prot.accession2taxid"
-TAXONKIT_DB=“Seg_DB/taxonkit_db”
+TAXONKIT_DB="Seg_DB/taxonkit_db"
 
 
 # Parse command-line arguments
