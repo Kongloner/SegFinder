@@ -54,9 +54,8 @@ my $rsem_add_opts = "";
 
 my $kallisto_add_opts = "";
 my $salmon_add_opts= "";
-my $salmon_idx_type = 'quasi';
-my $salmon_quasi_kmer_length = 31;
-my $salmon_fmd_kmer_length = 19;
+
+my $salmon_kmer_length = 31;
 
 my $usage = <<__EOUSAGE__;
 
@@ -161,7 +160,6 @@ my $usage = <<__EOUSAGE__;
 #
 #  salmon opts:
 #
-#  --salmon_idx_type <string>    quasi|fmd (defalt: $salmon_idx_type)
 #  --salmon_add_opts <string>    default: $salmon_add_opts
 #
 #
@@ -169,19 +167,19 @@ my $usage = <<__EOUSAGE__;
 #
 #   ## Just prepare the reference for alignment and abundance estimation
 #
-#    $0 --transcripts Trinity.fasta --est_method RSEM --aln_method bowtie --trinity_mode --prep_reference
+#    $0 --transcripts Trinity.fasta --est_method salmon --trinity_mode --prep_reference
 #
 #   ## Run the alignment and abundance estimation (assumes reference has already been prepped, errors-out if prepped reference not located.)
 #
-#    $0 --transcripts Trinity.fasta --seqType fq --left reads_1.fq --right reads_2.fq --est_method RSEM --aln_method bowtie --trinity_mode --output_dir rsem_outdir
+#    $0 --transcripts Trinity.fasta --seqType fq --left reads_1.fq --right reads_2.fq --est_method salmon --trinity_mode --output_dir salmon_quant
 #
 ##  ## prep the reference and run the alignment/estimation
 #
-#    $0 --transcripts Trinity.fasta --seqType fq --left reads_1.fq --right reads_2.fq --est_method RSEM --aln_method bowtie --trinity_mode --prep_reference --output_dir rsem_outdir
+#    $0 --transcripts Trinity.fasta --seqType fq --left reads_1.fq --right reads_2.fq --est_method salmon --trinity_mode --prep_reference --output_dir salmon_quant
 #
 #   ## Use a samples.txt file:
 #
-#    $0 --transcripts Trinity.fasta --est_method RSEM --aln_method bowtie2 --prep_reference --trinity_mode --samples_file samples.txt --seqType fq  
+#    $0 --transcripts Trinity.fasta --est_method salmon --prep_reference --trinity_mode --samples_file samples.txt --seqType fq  
 #
 #########################################################################
 
@@ -274,10 +272,8 @@ my $samples_idx = 0;
               'salmon_add_opts=s' => \$salmon_add_opts,
     
               'coordsort_bam' => \$coordsort_bam_flag,
-
-             'salmon_idx_type=s' => \$salmon_idx_type,
-             'salmon_quasi_kmer_length=i' => \$salmon_quasi_kmer_length,
-             'salmon_fmd_kmer_length=i' => \$salmon_fmd_kmer_length,
+    
+              'salmon_kmer_length=i' => \$salmon_kmer_length,
     
     );
 
@@ -330,11 +326,12 @@ unless ($est_method =~ /^(RSEM|kallisto|salmon|none)$/i) {
 my @samples_to_process;
 if ($samples_file) {
     @samples_to_process = &parse_samples_file($samples_file);
-    if ($samples_idx >= 0) {
+    if ($samples_idx > 0) {
         my $num_samples = scalar(@samples_to_process);
         if ($samples_idx > $num_samples) {
             die "Error, sample index $samples_idx > $num_samples num samples ";
         }
+        @samples_to_process = ($samples_to_process[$samples_idx-1]); # run only that sample
     }
 }
 elsif ( ($left && $right) || $single) {
@@ -345,7 +342,6 @@ elsif ( ($left && $right) || $single) {
     @samples_to_process = &create_sample_definition($output_dir, $left, $right, $single);
     
 }
-
 
 
 my $PE_mode = 1;
@@ -405,7 +401,7 @@ if ( $thread_count !~ /^\d+$/ ) {
     
         
     foreach my $tool (@tools) {
-        my $p = `which $tool`;
+        my $p = `sh -c "command -v $tool"`;
         unless ($p =~ /\w/) {
             warn("ERROR, cannot find $tool in PATH setting: $ENV{PATH}\n\n");
             $missing = 1;
@@ -619,7 +615,7 @@ sub run_alignment_do_quant {
     if ($est_method eq "RSEM") {
         
         # convert bam file for use with rsem:
-        &process_cmd("convert-sam-for-rsem $bam_file $bam_file.for_rsem");
+        &process_cmd("convert-sam-for-rsem -p $thread_count $bam_file $bam_file.for_rsem");
         
         &run_RSEM("$bam_file.for_rsem.bam", $rsem_prefix, $output_prefix);
     }
@@ -842,7 +838,7 @@ sub run_kallisto {
 sub run_salmon {
     my (@samples) = @_;
     
-    my $salmon_index = "$transcripts.salmon_${salmon_idx_type}.idx";
+    my $salmon_index = "$transcripts.salmon.idx";
     
     if ( (! $prep_reference) && (! -e $salmon_index)) {
         confess "Error, no salmon index file: $salmon_index, and --prep_reference not set.  Re-run with --prep_reference";
@@ -850,17 +846,7 @@ sub run_salmon {
     if ($prep_reference && ! -e $salmon_index) {
         
         ## Prep salmon index
-        my $cmd;
-        
-        if ($salmon_idx_type eq 'quasi') {
-            $cmd = "salmon index -t $transcripts --keepDuplicates -i $salmon_index --type quasi -k $salmon_quasi_kmer_length -p $thread_count";
-        }
-        elsif ($salmon_idx_type eq 'fmd') {
-            $cmd = "salmon index -t $transcripts --keepDuplicates -i $salmon_index --type fmd -p $thread_count";
-        }
-        else {
-            die "Error, not recognizing idx type: $salmon_idx_type";
-        }
+        my $cmd = "salmon index -t $transcripts --keepDuplicates -i $salmon_index -k $salmon_kmer_length -p $thread_count";
         
         &process_cmd($cmd);
     }
@@ -888,36 +874,16 @@ sub run_salmon {
         
             if ($left_file && $right_file) {
                 ## PE mode
-                my $cmd;
                 my $libtype = ($SS_lib_type) ? "IS" . substr($SS_lib_type, 0, 1) : "IU";
                 
-                if ($salmon_idx_type eq 'quasi') {
-                    $cmd = "salmon quant -i $salmon_index -l $libtype -1 $left_file -2 $right_file -o $outdir $salmon_add_opts -p $thread_count";
-                }
-                elsif ($salmon_idx_type eq 'fmd') {
-                    $cmd = "salmon quant -i $salmon_index -l $libtype -1 $left_file -2 $right_file -k $salmon_fmd_kmer_length -o $outdir $salmon_add_opts -p $thread_count";
-                }
-                else {
-                    die "Error, not recognizing salmon_idx_type: $salmon_idx_type";
-                }
+                my $cmd = "salmon quant -i $salmon_index -l $libtype -1 $left_file -2 $right_file -o $outdir $salmon_add_opts -p $thread_count --validateMappings ";
                 
                 &process_cmd($cmd);
-            
+                
             }
             elsif ($single_file) {
                 my $libtype = ($SS_lib_type) ? "S" . substr($SS_lib_type, 0, 1) : "U";
-                my $cmd;
-                
-                if ($salmon_idx_type eq 'quasi') {
-                    $cmd = "salmon quant -i $salmon_index -l $libtype -r $single_file -o $outdir $salmon_add_opts -p $thread_count";
-                }
-                elsif ($salmon_idx_type eq 'fmd') {
-                    $cmd = "salmon quant -i $salmon_index -l $libtype -r $single_file -k $salmon_fmd_kmer_length -o $outdir $salmon_add_opts -p $thread_count";
-                }
-                else {
-                    die "Error, not recognizing salmon_idx_type: $salmon_idx_type";
-                }
-                
+                my $cmd = "salmon quant -i $salmon_index -l $libtype -r $single_file -o $outdir $salmon_add_opts -p $thread_count --validateMappings ";
                 &process_cmd($cmd);
                 
             }
