@@ -1,3 +1,5 @@
+rm(list = ls())
+
 cat("Loading of the libraries.... \n")
 suppressMessages(library(stringr))
 suppressMessages(library(dplyr))
@@ -21,4 +23,3 @@ data_res <- data2[which(data2$Length > as.numeric(args[3])), ]
 
 write.table(data_res,"RSEM_pre.txt",  sep="\t",  row.names=TRUE,
             col.names=TRUE, quote=TRUE)
-~
