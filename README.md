@@ -127,19 +127,9 @@ md5sum -c prot.accession2taxid.gz.md5
 #Unzip the files
 gunzip -c prot.accession2taxid.gz > accession2taxid/prot.accession2taxid
 ```
-#### 2) taxonkit_db (The built-in local database provided by TaxonKit)
-```shell
-#Download the `taxdump.tar.gz` file
-wget -c https://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz 
-tar -zxvf taxdump.tar.gz
-
-mkdir -p taxonkit_db
-mv names.dmp nodes.dmp delnodes.dmp merged.dmp taxonkit_db
-```
-
-#### 3) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
-#### 4) [NCBI Non-Redundant Nucleotide Database (NT)](./flow/db_NT.md)
-#### 5) [Virus-free Non-Redundant Nucleotide Database (Virus-free NT)](./flow/db_nt_noViruses.md)
+#### 2) [NCBI Non-Redundant Protein Database (NR)](./flow/db_NR.md)
+#### 3) [NCBI Non-Redundant Nucleotide Database (NT)](./flow/db_NT.md)
+#### 4) [Virus-free Non-Redundant Nucleotide Database (Virus-free NT)](./flow/db_nt_noViruses.md)
 Note: If you need to remove contamination from viral sequences, you can download this non-viral database to align and filter out the contaminating sequences. Use the `--nt_noViruses` parameter to specify the path to this database. This database is optional and does not need to be used unless contamination removal is required.
 
 ### Using    
@@ -156,8 +146,7 @@ Note:Large amounts of data can be assembled using megahit, small amounts of data
 ```shell
 ./SegFinder.sh  --stage rdrp_find \
                 --nr Seg_DB/NR/nr \
-                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-                --taxonkit_db Seg_DB/taxonkit_db
+                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid 
 ```
 Note:The NR database is indexed using DIAMOND, while the NT database is indexed using makeblastdb.  
 #### Step 3: Segmented RNA virus finder        
@@ -165,7 +154,6 @@ Note:The NR database is indexed using DIAMOND, while the NT database is indexed 
 ./SegFinder.sh --stage segment_find \
                --nt Seg_DB/NT/nt \
                --taxidDB Seg_DB/accession2taxid/prot.accession2taxid \
-               --taxonkit_db Seg_DB/taxonkit_db \
                --library_ID SRR7102768
 ```
 Required arguments:     
