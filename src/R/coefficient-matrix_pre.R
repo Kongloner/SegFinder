@@ -10,10 +10,10 @@ args <- commandArgs(T)
 setwd(args[2])
 
 data1 <- read.table(paste0(args[1],"_megahit_assemble_nr.edited.tsv"),sep = "\t",quote = "")
-data1 <- data1[,-1]
+data1 <- data1[,-(8:9)]
 colnames(data1) <- c("Contigs","Length","Accession","Species","Similarly","aa_length","E-value","Species_annotion")
 
-split_b<-str_split(data1$Species_annotion,"|")
+split_b<-str_split(data1$Species_annotion,"\\|")
 b<-sapply(split_b,"[",2)
 data1$Species_annotion <-b
 data1$Species_annotion[is.na(data1$Species_annotion)]<-"V"
