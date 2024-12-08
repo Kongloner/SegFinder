@@ -289,7 +289,7 @@ if [ $stage == "rdrp_find" ]; then
 	rm -rf ${file}.taxid_table.txt.nr  diamond_nr_taxonomy.tsv blastp_raw2taxid.tsv ${file}.accession_list.txt.nr diamond_nr_taxonomy_temp*
 
 	grep -i "virus" ${file}_megahit_assemble_nr.edited.tsv > ${file}_assemble_nr.virus
-	cat ${file}_assemble_nr.virus | cut -f1 | sort -u > ${file}_assemble_nr.virus.list
+	cat ${file}_assemble_nr.virus | cut -f2 | sort -u > ${file}_assemble_nr.virus.list
 	seqtk subseq ${file}.megahit.fa ${file}_assemble_nr.virus.list > ${file}_assemble_nr.virus.match
 	run_command diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db RdRP_only -p ${thread}
 	diamond  blastx \
