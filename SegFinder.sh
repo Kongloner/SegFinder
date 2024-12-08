@@ -269,7 +269,7 @@ if [ $stage == "rdrp_find" ]; then
 	}' OFS='\t' diamond_nr_taxonomy.tsv > temp_file && mv temp_file diamond_nr_taxonomy.tsv
 
 
-	# Step 2: Merge taxon information
+	# Merge taxon information
 	echo "Merging taxon information..."
 
 	awk 'BEGIN {FS="\t"; OFS="\t"} NR==FNR{a[$2]=$3; next} $3 in a{print $0, a[$3]}' ""$file".taxid_table.txt.nr" ""$file".megahit.fa.nr" > "blastp_raw2taxid.tsv"
@@ -289,7 +289,7 @@ if [ $stage == "rdrp_find" ]; then
 	rm -rf ${file}.taxid_table.txt.nr  diamond_nr_taxonomy.tsv blastp_raw2taxid.tsv ${file}.accession_list.txt.nr diamond_nr_taxonomy_temp*
 
 	grep -i "virus" ${file}_megahit_assemble_nr.edited.tsv > ${file}_assemble_nr.virus
-	cat ${file}_assemble_nr.virus | cut -f2 | sort -u > ${file}_assemble_nr.virus.list
+	cat ${file}_assemble_nr.virus | cut -f1 | sort -u > ${file}_assemble_nr.virus.list
 	seqtk subseq ${file}.megahit.fa ${file}_assemble_nr.virus.list > ${file}_assemble_nr.virus.match
 	run_command diamond makedb --in ${present_loc}/data/RdRP_only.fasta --db RdRP_only -p ${thread}
 	diamond  blastx \
