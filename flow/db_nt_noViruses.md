@@ -88,7 +88,7 @@ blastdb_aliastool -dblist "nt_prok nt_euk" -dbtype nucl -out NT/nt_noViruses -ti
 ```
 
 ## Other methods to configure the non-virus NT database
-We provide nt database based taxid non-virus nt database culling script, it can get non-virus nt database relatively easily.
+We also provide nt database based taxid non-virus nt database culling script, it can get non-virus nt database relatively easily.
 
 ```shell
 #download nucl_gb.accession2taxid
