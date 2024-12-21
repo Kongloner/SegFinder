@@ -87,7 +87,7 @@ blastdb_aliastool -dblist "nt_prok nt_euk" -dbtype nucl -out NT/nt_noViruses -ti
 
 ```
 
-## Other methods to configure a non-virus NT database
+## Other methods to configure the non-virus NT database
 ```shell
 #download nucl_gb.accession2taxid
 cd Seg_DB/accession2taxid
