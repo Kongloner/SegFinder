@@ -87,4 +87,25 @@ blastdb_aliastool -dblist "nt_prok nt_euk" -dbtype nucl -out NT/nt_noViruses -ti
 
 ```
 
+## Other methods to configure a non-virus NT database
+```shell
+#download nucl_gb.accession2taxid
+cd Seg_DB/accession2taxid
+wget -t 0 -c https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
+gunzip -c nucl_gb.accession2taxid.gz > Seg_DB/accession2taxid/nucl_gb.accession2taxid
 
+#download taxdump
+mdkir Seg_DB/taxdump
+wget -t 0 -c https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+cd Seg_DB/taxdump
+tar -zxvf taxdump.tar.gz
+
+#download ref_viruses_rep_genomes
+mkdir Seg_DB/ref_viruses_rep_genomes
+cd Seg_DB/ref_viruses_rep_genomes
+wget -t 0 -c https://figshare.com/ndownloader/files/46795402
+tar -zxvf ref_viruses_rep_genomes.tar.gz
+
+#Handling nt database
+python3 process_sequences.py --input Seg_DB/nt --out Seg_DB/nt_novirus.fasta --threads 40  --nucl_gb_accession2taxid_path Seg_DB/accession2taxid/nucl_gb.accession2taxid --taxdump_path Seg_DB/taxdump --ref_viruses_path Seg_DB/ref_viruses_rep_genomes
+```
