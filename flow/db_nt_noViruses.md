@@ -107,5 +107,5 @@ wget -t 0 -c https://figshare.com/ndownloader/files/46795402
 tar -zxvf ref_viruses_rep_genomes.tar.gz
 
 #Handling nt database
-python3 process_sequences.py --input Seg_DB/nt --out Seg_DB/nt_novirus.fasta --threads 40  --nucl_gb_accession2taxid_path Seg_DB/accession2taxid/nucl_gb.accession2taxid --taxdump_path Seg_DB/taxdump --ref_viruses_path Seg_DB/ref_viruses_rep_genomes
+python3 SegFinder/bin/process_sequences.py --input Seg_DB/nt --out Seg_DB/nt_novirus.fasta --threads 40  --nucl_gb_accession2taxid_path Seg_DB/accession2taxid/nucl_gb.accession2taxid --taxdump_path Seg_DB/taxdump --ref_viruses_path Seg_DB/ref_viruses_rep_genomes
 ```
