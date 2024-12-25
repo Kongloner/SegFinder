@@ -33,7 +33,7 @@ Usage
  [--datatype]... the type of input data single(input 1) or double(input 2)
  [--taxidDB]... the location of prot.accession2taxid database
  [--rm_length]... the contigs whose length less than this value will be removed; default 600
- [--min_rdrp_multi]... minimum length of rdrp and their re-assembled contigs to be retained; default 100
+ [--min_rdrp_multi]... minimum length of rdrp and their re-assembled contigs to be retained; default 50
  [--min_nordrp_multi]... minimum length of non-rdrp and their re-assembled contigs to be retained; default 20
  [--library_ID]... the library you want to search, can input multiple IDs separated by spaces
  [--assemble]... tthe tool to assemble the raw reads, megahit or spades; default spades
