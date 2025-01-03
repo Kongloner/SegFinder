@@ -430,8 +430,8 @@ if [ $stage == "segment_find" ]; then
 		awk -F " " '{print $2}' ${library_ID}_megahit_assemble_nr.edited.tsv_del_re > ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt
 		seqtk subseq ${library_ID}.re.fasta ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt > ${library_ID}.re.fasta_del
 		awk '/^>/{p=!d[$1]}p' ${input_fasta} ${library_ID}.re.fasta_del > ${library_ID}.re.fasta-1
-		mv ${library_ID}.re.fasta-1 ${library_ID}.re.fasta
-
+		#mv ${library_ID}.re.fasta-1 ${library_ID}.re.fasta
+                seqkit rmdup -n ${library_ID}.re.fasta-1 > ${library_ID}.re.fasta
 		# Cleanup temporary files
 		rm ${input_blastn} ${library_ID}.re.blastn.txt ${library_ID}.re.fasta.modify.list ${library_ID}.re.fasta.modify.list_del ${library_ID}_megahit_assemble_nr.edited.tsv_del
 		rm ${library_ID}_megahit_assemble_nr.edited.tsv_del_re.txt ${library_ID}.re.fasta_del
