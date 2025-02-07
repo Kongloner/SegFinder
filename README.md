@@ -35,10 +35,10 @@ To simplify the setup process, we have prepared a **pre-built Singularity image 
 To pull and use the Singularity image, run the following commands:
 ```shell
 # Pull the pre-built Singularity image, you can also manually download the image from https://cloud.sylabs.io/library/kongloner/my_collection/segment_container
-singularity build segment_env.sif library://kongloner/my_collection/segment_container:latest
+singularity pull --arch amd64 library://kongloner/my_collection/segment_container:latest
 
 # Launch a shell in the Singularity container
-singularity shell segment_env.sif
+singularity shell segment_container_latest.sif
 
 # To exit the container, use:
 exit
