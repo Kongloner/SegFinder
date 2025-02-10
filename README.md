@@ -173,7 +173,7 @@ Note:The NR database is indexed using DIAMOND, while the NT database is indexed 
 ```
 Required arguments:     
  
- `--indata`: the location of the raw data (in 'fq.gz' format,for paired-end sequencing data, file names should follow the *_1.fq.gz and *_2.fq.gz format to distinguish sequencing data from different libraries).   
+ `--indata`: the location of the raw data (in 'fq.gz' format, for paired-end sequencing data, file names should follow the *_1.fq.gz and *_2.fq.gz format to distinguish sequencing data from different libraries).   
 
  `--stage`: specify the stage of the pipeline to run: preprocess, rdrp_find, or segment_find. 
 
