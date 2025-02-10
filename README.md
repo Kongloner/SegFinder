@@ -30,7 +30,7 @@ git clone https://github.com/Kongloner/SegFinder.git
 chmod +x SegFinder/SegFinder.sh
 ```
 
-### **⚙️ Using the Conda Environment YAML File to Install Dependencies (Optional 1)**
+### **⚙️ Using the Conda Environment YML File to Install Dependencies (Optional 1)**
 To simplify the setup process, we have provided a **pre-configured Conda environment** that includes all necessary dependencies required to execute the entire workflow. Users can create this environment directly from the included **env.yml** file, allowing you to bypass the need for manual installation of individual packages and **skip steps 2 and 3** below.
 
 To pull and use the Conda environment, run the following command:
