@@ -217,7 +217,7 @@ Required arguments:
 
 | processed_data  | Description |
 | ------------- | ------------- |
-| library_ID.megahit.fa  | Annotated contig sequences in FASTA format after assembly  |
+| library_ID.megahit.fa  | Contigs in FASTA format after assembly  |
 | library_ID.megahit.fa.rdrp  | Annotated RdRP document in text format  |
 | library_ID.megahit.fa.rdrp.fasta | Annotated RdRP sequences in FASTA format  |
 
