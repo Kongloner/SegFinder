@@ -30,9 +30,16 @@ git clone https://github.com/Kongloner/SegFinder.git
 chmod +x SegFinder/SegFinder.sh
 ```
 
-### **⚙️ Using the Singularity Image to Install Dependencies (Optional 1)**
+### **⚙️ Using the Conda Environment YAML File to Install Dependencies (Optional 1)**
 To simplify the setup process, we have provided a **pre-configured Conda environment** that includes all necessary dependencies required to execute the entire workflow. Users can create this environment directly from the included **environment.yml** file, allowing you to bypass the need for manual installation of individual packages and **skip steps 2 and 3** below.
 
+To pull and use the Conda environment, run the following command:
+```shell
+# This command will create a complete Conda environment based on the environment.yml file, ensuring that all required dependencies are installed.
+conda env create -f SegFinder/env.yml
+# Once the environment is successfully created, activate it using:
+conda activate SegFinder
+```
 
 ### **⚙️ Using the Singularity Image to Install Dependencies (Optional 2)**
 To simplify the setup process, we have prepared a **pre-built Singularity image (3.5.X)** that includes the complete runtime environment required to execute the entire workflow. Users can utilize this image directly without the need to manually install complex dependencies, effectively allowing you to **skip steps 2 and 3** below.
