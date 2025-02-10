@@ -37,6 +37,7 @@ To pull and use the Conda environment, run the following command:
 ```shell
 # This command will create a complete Conda environment based on the environment.yml file, ensuring that all required dependencies are installed.
 conda env create -f SegFinder/env.yml
+
 # Once the environment is successfully created, activate it using:
 conda activate SegFinder
 ```
