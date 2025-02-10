@@ -29,7 +29,12 @@ sudo apt install sqlite3 libsqlite3-dev git-all
 git clone https://github.com/Kongloner/SegFinder.git
 chmod +x SegFinder/SegFinder.sh
 ```
-### **⚙️ Using the Singularity Image to Install Dependencies (Optional)**
+
+### **⚙️ Using the Singularity Image to Install Dependencies (Optional 1)**
+To simplify the setup process, we have provided a **pre-configured Conda environment** that includes all necessary dependencies required to execute the entire workflow. Users can create this environment directly from the included **environment.yml** file, allowing you to bypass the need for manual installation of individual packages and **skip steps 2 and 3** below.
+
+
+### **⚙️ Using the Singularity Image to Install Dependencies (Optional 2)**
 To simplify the setup process, we have prepared a **pre-built Singularity image (3.5.X)** that includes the complete runtime environment required to execute the entire workflow. Users can utilize this image directly without the need to manually install complex dependencies, effectively allowing you to **skip steps 2 and 3** below.
 
 To pull and use the Singularity image, run the following commands:
@@ -46,7 +51,7 @@ exit
 Note:By default, Singularity does not expose the entire host file system to the container for security reasons. Only a few common directories like /home/$USER, /tmp, and /proc are mounted.To access other directories, use the --bind option. For example, to mount the /home directory into the container:
 `singularity shell --bind /home:/home segment_env.sif`
 
-Note:singularity provided BLAST version is BLAST 2.16.0+
+Note:The version of BLAST provided by Singularity is BLAST 2.16.0+
 
 ### step2: Install conda and necessary tools
 #### 1) Download anaconda3
