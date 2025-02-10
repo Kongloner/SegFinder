@@ -31,11 +31,11 @@ chmod +x SegFinder/SegFinder.sh
 ```
 
 ### **⚙️ Using the Conda Environment YAML File to Install Dependencies (Optional 1)**
-To simplify the setup process, we have provided a **pre-configured Conda environment** that includes all necessary dependencies required to execute the entire workflow. Users can create this environment directly from the included **environment.yml** file, allowing you to bypass the need for manual installation of individual packages and **skip steps 2 and 3** below.
+To simplify the setup process, we have provided a **pre-configured Conda environment** that includes all necessary dependencies required to execute the entire workflow. Users can create this environment directly from the included **env.yml** file, allowing you to bypass the need for manual installation of individual packages and **skip steps 2 and 3** below.
 
 To pull and use the Conda environment, run the following command:
 ```shell
-# This command will create a complete Conda environment based on the environment.yml file, ensuring that all required dependencies are installed.
+# This command will create a complete Conda environment based on the env.yml file, ensuring that all required dependencies are installed.
 conda env create -f SegFinder/env.yml
 
 # Once the environment is successfully created, activate it using:
