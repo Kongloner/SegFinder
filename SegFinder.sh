@@ -237,7 +237,7 @@ if [ $stage == "rdrp_find" ]; then
        cat ${file}_megahit_assemble_nr | cut -f3 | sort -u | grep -v "^[0-9]" | grep -v -e '^$' > ${file}_accession_list.txt.nr
        grep -F -f ${file}_accession_list.txt.nr $taxidDB_loc > ${file}.taxid_table.txt.nr
        cat  ${file}.taxid_table.txt.nr | cut -f3 -d$'\t' | sort -u > ${file}.taxid_list.txt.nr
-       python3 ${present_loc}/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${file}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${file}.lineage_table.txt.nr
+       python3 ${present_loc}/src/simbiont-js/tools/ncbi/ncbi.taxonomist.py --sep "|" -d < ${file}.taxid_list.txt.nr | sed "s/|/\t/" | sed "s/\t[^|]*|/\t/" > ${file}.lineage_table.txt.nr
        cat sqlite_table/sqlite_template.nr | sed "s/template/"${file}"/g" > sqlite_${file}.nr
        sqlite3 sqlite_${file}.nr.summary.sql < sqlite_${file}.nr
        mv ${file}_megahit_assemble_nr.edited ${file}_megahit_assemble_nr.edited.tsv
