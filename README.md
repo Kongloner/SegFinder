@@ -255,7 +255,7 @@ Columns in `library_ID.final.confidence_table.xlsx`
 Intermediate files generated during analysis, located under `megahit/rdrp` folders
  
 ## Cite this article
-Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: an automated tool for identifying RNA virus genome segments through co-occurrence in multiple sequenced samples. ----------; doi: -------------------  
+Xue Liu#, Jianbin Kong#, Yongtao Shan, Ziyue Yang, Jiafan Miao1,2,3, Yuanfei Pan4, Tianyang Luo1,2,3, Zhan Xu1,2,3, Zhiyuan Shi1,2,3, Yingmei Wang1,2,3, Qinyu Gou1,2,3, Chunhui Yang1,2,3, Chunmei Li1,2,3, Shaochuan Li5, Xu Zhang5, Yanni Sun6, Edward C. Holmes7,8, Deyin Guo*,9,10, Mang Shi*,1,2,3,11. SegFinder: an automated tool for identifying complete RNA virus genome segments through co-occurrence in multiple sequenced samples, Briefings in Bioinformatics, Volume 26, Issue 4, July 2025, bbaf358, https://doi.org/10.1093/bib/bbaf358
 \# equally contributed    
 
   
